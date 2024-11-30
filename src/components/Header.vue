@@ -1,23 +1,3 @@
-<script>
-  export default {
-    name:"Header",
-    methods:{
-      toUser(){
-        console.log("user")
-      },
-      logout(){
-        console.log("log out")
-      },
-      collapse(){
-        this.$emit("doCollapse")
-      }
-    },
-    props:{
-      icon:String
-    }
-  }
-</script>
-
 <template>
   <div style="display: flex;line-height: 60px;">
     <div style="font-size: 20px;cursor:pointer">
@@ -37,6 +17,26 @@
 
   </div>
 </template>
+<script>
+export default {
+  name:"Header",
+  methods:{
+    toUser(){
+      console.log("user")
+    },
+    logout(){
+      console.log("log out")
+    },
+    collapse(){
+      this.$emit("doCollapse")
+    }
+  },
+  props:{
+    icon:String
+  }
+}
+</script>
+
 
 <style scoped>
  /*.myStyle{

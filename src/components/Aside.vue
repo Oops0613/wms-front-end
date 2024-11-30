@@ -1,3 +1,30 @@
+<template>
+    <el-menu :default-active="activeMenu"
+             mode="vertical"
+             theme="dark"
+             background-color="#323232"
+             text-color="#fff"
+             active-text-color="#26ffdf"
+             style="height: 100vh"
+             :collapse='isCollapse'
+             :collapse-transition="false"
+    >
+      <template v-for="item in menuData">
+        <el-submenu v-if="item.children && item.children.length" :key="item.id" :index="item.url">
+          <i class="el-icon-message" slot="title"></i>
+          <span slot="title">{{ item.label }}</span>
+          <el-menu-item v-for="subItem in item.children" :key="subItem.id" :index="subItem.url">
+            <i class="el-icon-message"></i>
+            <span slot="title">{{ subItem.label }}</span>
+          </el-menu-item>
+        </el-submenu>
+        <el-menu-item v-else :key="item.id" :index="item.url">
+          <i class="el-icon-s-home"></i>
+          <span slot="title">{{ item.label }}</span>
+        </el-menu-item>
+      </template>
+    </el-menu>
+</template>
 <script>
 export default {
   name: "Aside",
@@ -59,35 +86,6 @@ export default {
   }
 };
 </script>
-
-<template>
-    <el-menu :default-active="activeMenu"
-             mode="vertical"
-             theme="dark"
-             background-color="#323232"
-             text-color="#fff"
-             active-text-color="#26ffdf"
-             style="height: 100vh"
-             :collapse='isCollapse'
-             :collapse-transition="false"
-    >
-      <template v-for="item in menuData">
-        <el-submenu v-if="item.children && item.children.length" :key="item.id" :index="item.url">
-          <i class="el-icon-message" slot="title"></i>
-          <span slot="title">{{ item.label }}</span>
-          <el-menu-item v-for="subItem in item.children" :key="subItem.id" :index="subItem.url">
-            <i class="el-icon-message"></i>
-            <span slot="title">{{ subItem.label }}</span>
-          </el-menu-item>
-        </el-submenu>
-        <el-menu-item v-else :key="item.id" :index="item.url">
-          <i class="el-icon-s-home"></i>
-          <span slot="title">{{ item.label }}</span>
-        </el-menu-item>
-      </template>
-    </el-menu>
-</template>
-
 <style scoped>
 /*由于 element-ui 的<el-menu>标签本身希望里面嵌套的是<el-menu-item>,<el-submenu>,<el-menu-item-group>之一，但是却嵌套了<div>,而导致收折就隐藏不了文字*/
 /*隐藏文字*/

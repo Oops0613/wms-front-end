@@ -10,7 +10,7 @@ import Fragment from 'vue-fragment'
 Vue.config.productionTip = false
 
 Vue.use(Fragment.Plugin)
-Vue.use(ElementUI);
+Vue.use(ElementUI,{size:"small"});
 Vue.prototype.$axios=axios;
 Vue.prototype.$httpUrl="http://localhost:8090";
 new Vue({

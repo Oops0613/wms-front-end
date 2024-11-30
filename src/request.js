@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const request = axios.create({
     baseURL: 'http://localhost:8090',  // 注意！！ 这里是全局统一加上了 后端接口前缀 前缀，后端必须进行跨域配置！
-    timeout: 5000
+    timeout: 50000
 })
 
 // request 拦截器
@@ -21,6 +21,7 @@ request.interceptors.request.use(config => {
 // 可以在接口响应后统一处理结果
 request.interceptors.response.use(
     response => {
+        //console.log(response)
         let res = response.data;
         // 如果是返回的文件
         if (response.config.responseType === 'blob') {
