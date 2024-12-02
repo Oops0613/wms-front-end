@@ -153,7 +153,6 @@ export default {
     getUser(id){
       request.get("/user/"+id).then(res=>{
         console.log(res);
-        
         this.form=res.data;
       })
     },
@@ -211,7 +210,7 @@ export default {
           this.loadget();
         } else {
           this.$message({
-            message: "新增用户失败",
+            message: res.msg,
             type: "error"
           })
         }

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {getToken} from "@/auth";
 
 const request = axios.create({
     baseURL: 'http://localhost:8090',  // 注意！！ 这里是全局统一加上了 后端接口前缀 前缀，后端必须进行跨域配置！
@@ -10,8 +11,13 @@ const request = axios.create({
 // 比如统一加token，对请求参数统一加密
 request.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=utf-8';
-
+    config.headers.token=sessionStorage.getItem("token");
     // config.headers['token'] = user.token;  // 设置请求头
+    // 是否需要设置 token
+    // const isToken = (config.headers || {}).isToken === false
+    // if (getToken() && !isToken) {
+    //     config.headers['token'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+    // }
     return config
 }, error => {
     return Promise.reject(error)

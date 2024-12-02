@@ -6,7 +6,7 @@
     <div style="flex:1;text-align: center;font-size: 35px">
       <span>欢迎使用超市仓储管理系统</span>
     </div>
-    <span>王小虎</span>
+    <span>{{user.realName}}</span>
     <el-dropdown>
       <i class="el-icon-arrow-down" style="margin-left: 5px"></i>
       <el-dropdown-menu slot="dropdown">
@@ -18,18 +18,62 @@
   </div>
 </template>
 <script>
+import request from "@/request";
+
 export default {
   name:"Header",
+  data(){
+    return {
+      user: {
+        id:'',
+        userName:'',
+        realName:'',
+        sex: '',
+        email: '',
+        phonenumber:'',
+      }
+    }
+  },
   methods:{
     toUser(){
       console.log("user")
     },
     logout(){
       console.log("log out")
+      this.$confirm('确定退出登录？','提示',{
+        confirmButtonText:"确定",
+        type:"warning",
+        center:"true"
+      }).then(()=>{
+        this.$message({
+          type:"success",
+          message:"退出登录成功"
+        })
+        this.$router.push("/");
+        sessionStorage.clear();
+      }).catch(()=>{
+        this.$message({
+          type:"info",
+          message:"已取消"
+        })
+      })
+
+
     },
     collapse(){
       this.$emit("doCollapse")
+    },
+    getInfo(){
+      request.get("/user/getInfo").then(res=>{
+        if(res.code==200){
+          console.log("user",res.data.user)
+          this.user=res.data.user;
+        }
+      })
     }
+  },
+  mounted() {
+    this.getInfo();
   },
   props:{
     icon:String

@@ -1,18 +1,18 @@
 <template>
   <div id="app">
 <!--    <el-button type="info">按钮</el-button>-->
-    <Index></Index>
+    <router-view/>
   </div>
 </template>
 
 <script>
 
-import Index from "@/components/Index.vue";
+//import Index from "@/components/Index.vue";
 
 export default {
   name: 'App',
   components: {
-    Index
+    //Index
   }
 }
 </script>

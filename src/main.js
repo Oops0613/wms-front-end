@@ -4,15 +4,18 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import "./assets/global.css"
 import axios from "axios";
-
-import Fragment from 'vue-fragment'
+import VueRouter from "vue-router";
+import router from "./router/index"
+//import Fragment from 'vue-fragment'
 
 Vue.config.productionTip = false
 
-Vue.use(Fragment.Plugin)
+//Vue.use(Fragment.Plugin)
+Vue.use(VueRouter);
 Vue.use(ElementUI,{size:"small"});
 Vue.prototype.$axios=axios;
 Vue.prototype.$httpUrl="http://localhost:8090";
 new Vue({
+  router,
   render: h => h(App),
 }).$mount('#app')
