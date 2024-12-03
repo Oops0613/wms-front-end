@@ -25,7 +25,7 @@
 
 <script>
 import request from "../request";
-import {setToken} from "@/auth";
+import {login} from "@/api/user";
 
 export default {
   name: "Login",
@@ -53,7 +53,7 @@ export default {
       this.$refs.loginForm.validate((valid) => {
         if (valid) { //valid成功为true，失败为false
           //去后台验证用户名密码
-          request.post('/user/login',this.loginForm,).then(res=>{
+          login(this.loginForm).then(res=>{
             console.log(res)
             if(res.code==200){
               //存储

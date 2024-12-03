@@ -11,7 +11,7 @@
       <i class="el-icon-arrow-down" style="margin-left: 5px"></i>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item @click.native="toUser">个人中心</el-dropdown-item>
-        <el-dropdown-item @click.native="logout">退出登录</el-dropdown-item>
+        <el-dropdown-item @click.native="handleLogout">退出登录</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
 
@@ -19,6 +19,7 @@
 </template>
 <script>
 import request from "@/request";
+import {logout} from "@/api/user";
 
 export default {
   name:"Header",
@@ -38,7 +39,7 @@ export default {
     toUser(){
       console.log("user")
     },
-    logout(){
+    handleLogout(){
       console.log("log out")
       this.$confirm('确定退出登录？','提示',{
         confirmButtonText:"确定",
@@ -50,7 +51,16 @@ export default {
           message:"退出登录成功"
         })
         this.$router.push("/");
-        sessionStorage.clear();
+        logout().then(res=>{
+          if(res.code==200){
+            sessionStorage.clear();
+          }
+          else {
+            alert("res.msg");
+          }
+        })
+
+
       }).catch(()=>{
         this.$message({
           type:"info",

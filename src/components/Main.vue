@@ -1,13 +1,16 @@
 <template>
   <div>
     <div style="margin-bottom: 5px">
-      <el-input v-model="realName" placeholder="输入姓名" style="width: 150px" suffix-icon="el-icon-search"
+      <el-input v-model="queryParams.realName" placeholder="输入姓名" style="width: 150px" suffix-icon="el-icon-search"
         @keyup.enter.native="loadget">
       </el-input>
-      <el-select v-model="order" filterable placeholder="请选择排序方式" style="margin-left: 5px">
-        <el-option v-for="item in orders" :key="item.value" :label="item.label" :value="item.value">
-        </el-option>
-      </el-select>
+      <el-input v-model="queryParams.phonenumber" placeholder="输入手机号" style="width: 150px" suffix-icon="el-icon-search"
+        @keyup.enter.native="loadget">
+      </el-input>
+<!--      <el-select v-model="order" filterable placeholder="请选择排序方式" style="margin-left: 5px">-->
+<!--        <el-option v-for="item in orders" :key="item.value" :label="item.label" :value="item.value">-->
+<!--        </el-option>-->
+<!--      </el-select>-->
       <el-button size="small" type="primary" style="margin-left: 5px" @click="loadget">查询</el-button>
       <el-button size="small" type="success" @click="resetParam">重置</el-button>
       <el-button size="small" type="success" @click="add">新增</el-button>
@@ -33,15 +36,15 @@
       <el-table-column prop="operate" label="操作">
         <template slot-scope="scope">
           <el-button size="small" type="success" @click="edit(scope.row)">编辑</el-button>
-          <el-popconfirm title="确定删除吗？" @confirm="deleteUser(scope.row.id)" style="margin-left: 5px">
+          <el-popconfirm title="确定删除吗？" @confirm="handleDelete(scope.row.id)" style="margin-left: 5px">
             <el-button slot="reference" size="small" type="danger">删除</el-button>
           </el-popconfirm>
 
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageNum"
-      :page-sizes="[2, 5, 10, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
+    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="queryParams.pageNum"
+      :page-sizes="[2, 5, 10, 20]" :page-size="queryParams.pageSize" layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
     <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
@@ -53,7 +56,7 @@
         <el-form-item label="密码" style="width: 80%" prop="password">
           <el-input v-model="form.password"></el-input>
         </el-form-item>
-      </div>
+        </div>
         <el-form-item label="姓名" style="width: 80%" prop="realName">
           <el-input v-model="form.realName"></el-input>
         </el-form-item>
@@ -79,42 +82,25 @@
 </template>
 <script>
 import request from '../request';
-
+import {listUser,
+        getUser,
+        addUser,
+        updateUser,
+        delUser}
+  from "@/api/user"
 export default {
   name: "Main",
   data() {
     return {
       adding:false,
       tableData: [],
-      pageNum: 1,
-      pageSize: 2,
+      queryParams:{
+        pageNum: 1,
+        pageSize: 2,
+        realName:'',
+        phonenumber:''
+      },
       total: 0,
-      userName: "",
-      realName: "",
-      email: "",
-      phonenumber: "",
-      sex: "",
-      sexs: [
-        {
-          value: 0,
-          label: '男'
-        },
-        {
-          value: 1,
-          label: '女'
-        }
-      ],
-      order: "",
-      orders: [
-        {
-          value: 0,
-          label: '正序'
-        },
-        {
-          value: 1,
-          label: '倒序'
-        }
-      ],
       centerDialogVisible: false,
       form: {
         userName: '',
@@ -145,14 +131,14 @@ export default {
           { required: true, message: "请输入邮箱", trigger: blur },
           { pattern:/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/, message: "请输入正确的邮箱", trigger: blur }
         ]
-      }
+      },
 
     }
   },
   methods: {
-    getUser(id){
-      request.get("/user/"+id).then(res=>{
-        console.log(res);
+    handleGet(id){
+      getUser(id).then(res=>{
+        //console.log(res);
         this.form=res.data;
       })
     },
@@ -160,9 +146,9 @@ export default {
       this.$refs.form.validate((valid) => {
         if (valid) {
           if (this.form.id) {
-            this.editUser();
+            this.handleEdit();
           } else {
-            this.addUser();
+            this.handleAdd();
           }
         } else {
           console.log('error submit!!');
@@ -172,18 +158,13 @@ export default {
     },
     edit(row) {
       this.adding=false;
-      console.log(row)
-      this.getUser(row.id);
+      //console.log(row)
+      this.handleGet(row.id);
       this.form.id = row.id;
-      // this.form.realName = row.realName;
-      // this.form.userName = row.userName;
-      // this.form.sex = row.sex;
-      // this.form.email = row.email;
-      // this.form.phonenumber = row.phonenumber;
       this.centerDialogVisible = true;
     },
-    editUser() {
-      request.put("/user/edit", this.form).then(res => {
+    handleEdit() {
+      updateUser(this.form).then(res => {
         if (res.code === 200) {
           this.$message({
             message: "修改用户成功",
@@ -199,9 +180,9 @@ export default {
         }
       })
     },
-    deleteUser(id) {
+    handleDelete(id) {
       //console.log(id)
-      request.delete("/user/delete/" + id).then(res => {
+      delUser(id).then(res => {
         if (res.code === 200) {
           this.$message({
             message: "删除用户成功",
@@ -220,11 +201,12 @@ export default {
       this.adding=true;
       this.centerDialogVisible = true;
       this.$nextTick(() => {
+        this.form.password='';
         this.resetForm();
       })
     },
-    addUser() {
-      request.post("/user/add", this.form).then(res => {
+    handleAdd() {
+      addUser(this.form).then(res => {
         if (res.code === 200) {
           this.$message({
             message: "新增用户成功",
@@ -242,17 +224,9 @@ export default {
     },
 
     loadget() {
-      request.get("/user/list", {
-        params: {
-          pageNum: this.pageNum,//由于模糊查询和初始化页面是一个页面
-          pageSize: this.pageSize,//这个是从前端用户输入的传到后端的参数
-          realName: this.realName,
-          userName: this.userName,
-          //order: this.order
-        }
-      }).then(res => {
-        console.log(res)
-        console.log("msn", res.data)
+      listUser(this.queryParams).then(res => {
+        //console.log(res)
+        //console.log("msn", res.data)
         if (res.code === 200) {
           this.tableData = res.data.rows;
           this.total = parseInt(res.data.total);
@@ -263,21 +237,35 @@ export default {
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
-      this.pageNum = 1;
-      this.pageSize = val;
+      this.queryParams.pageNum = 1;
+      this.queryParams.pageSize = val;
       this.loadget();
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
-      this.pageNum = val;
+      this.queryParams.pageNum = val;
       this.loadget();
     },
     resetParam() {
-      this.realName = '';
-      this.order = ''
+      this.queryParams.realName = '';
+      this.queryParams.phonenumber = '';
+      //this.order = ''
     },
     resetForm() {
-      this.$refs.form.resetFields();
+      //this.$refs.form.resetFields();
+      this.form = {
+        id: undefined,
+        userName: undefined,
+        nickName: undefined,
+        password: undefined,
+        phonenumber: undefined,
+        email: undefined,
+        sex: undefined,
+        status: '0',
+        remark: undefined,
+        roleIds: []
+      }
+      this.resetForm('form')
     },
   },
   beforeMount() {
