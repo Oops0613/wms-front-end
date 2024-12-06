@@ -30,6 +30,14 @@ export function updateUser(data) {
         data: data
     })
 }
+//更新用户密码
+export function updatePassword(data) {
+    return request({
+        url: '/user/editPassword',
+        method: 'put',
+        data: data
+    })
+}
 // 删除用户
 export function delUser(userId) {
     return request({

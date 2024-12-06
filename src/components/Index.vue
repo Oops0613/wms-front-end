@@ -10,7 +10,8 @@
       </el-header>
 
       <el-main style="height: 100%">
-        <Main></Main>
+<!--        <Main></Main>-->
+        <router-view/>
       </el-main>
     </el-container>
   </el-container>

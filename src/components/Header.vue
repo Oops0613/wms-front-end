@@ -19,7 +19,7 @@
 </template>
 <script>
 import request from "@/request";
-import {logout} from "@/api/user";
+import {logout,getInfo} from "@/api/user";
 
 export default {
   name:"Header",
@@ -38,6 +38,7 @@ export default {
   methods:{
     toUser(){
       console.log("user")
+      this.$router.push("/Home");
     },
     handleLogout(){
       console.log("log out")
@@ -73,17 +74,18 @@ export default {
     collapse(){
       this.$emit("doCollapse")
     },
-    getInfo(){
-      request.get("/user/getInfo").then(res=>{
+    initUser(){
+      getInfo().then(res=>{
         if(res.code==200){
-          console.log("user",res.data.user)
+          //console.log("user",res.data.user)
           this.user=res.data.user;
         }
       })
     }
   },
   mounted() {
-    this.getInfo();
+    this.initUser();
+    this.$router.push("/Home")
   },
   props:{
     icon:String
