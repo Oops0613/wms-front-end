@@ -17,7 +17,16 @@ const routes=[
                     title:"首页"
                 },
                 component:()=>import("../components/Home"),
-            }
+            },
+            // {
+            //     path:"/user",
+            //     name:'system',
+            //     mata:{
+            //         title:"用户管理"
+            //     },
+            //     component:()=>import("../components/Main.vue"),
+            //
+            // }
         ]
     }
 ]
@@ -46,4 +55,15 @@ router.beforeEach((to, from, next) => {
         }
     }
 });
+export function resetRouter() {
+    // router.matcher = new VueRouter({
+    //     mode:'history',
+    //     routes: []
+    // }).matcher
+    const newRouter = new VueRouter({
+        mode:"history",
+        routes:[]
+    })
+    router.matcher = newRouter.matcher
+}
 export default router;

@@ -24,8 +24,7 @@
 
 
 <script>
-import request from "../request";
-import {login} from "@/api/user";
+import {login,getRouters} from "@/api/user";
 
 export default {
   name: "Login",
@@ -61,8 +60,12 @@ export default {
               console.log(res.data.user);
               sessionStorage.setItem("token",res.data.token);
                 //setToken(res.token);
+              getRouters().then(res2=>{
+                console.log("路由,",res2.data.menus);
+                this.$store.commit("setMenu",res2.data.menus);
+              })
               //console.log(res.data.menu)
-              //this.$store.commit("setMenu",res.data.menu)
+
               //跳转到主页
               this.$router.replace('/Index');
             }else{

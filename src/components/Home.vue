@@ -1,103 +1,140 @@
 <template>
   <div style="text-align: center;background-color: #f1f1f3;height: 100%;padding: 0px;margin: 0px;">
     <h2 style="font-size: 50px;">{{ greeting + user.realName }}</h2>
-    <el-descriptions title="个人中心" :column="2" size="40" border>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-s-custom"></i>
-          账号
-        </template>
-        {{ user.userName }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-mobile-phone"></i>
-          电话
-        </template>
-        {{ user.phonenumber }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-box"></i>
-          邮箱
-        </template>
-        {{ user.email }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-location-outline"></i>
-          性别
-        </template>
-        <el-tag
-            :type="user.sex === '0' ? 'primary' : 'danger'"
-            disable-transitions><i
-            :class="user.sex==0?'el-icon-male':'el-icon-female'"></i>{{ user.sex == 0 ? "男" : "女" }}
-        </el-tag>
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-box"></i>
-          姓名
-        </template>
-        {{ user.realName }}
-      </el-descriptions-item>
-      <el-descriptions-item>
-        <template slot="label">
-          <i class="el-icon-tickets"></i>
-          角色
-        </template>
-        <el-tag
-            type="success"
-            disable-transitions>{{ user.roleId == 0 ? "超级管理员" : (user.roleId == 1 ? "管理员" : "用户") }}
-        </el-tag>
-      </el-descriptions-item>
-    </el-descriptions>
-    <!--    <template slot-scope="scope">-->
-    <el-button size="small" type="success" @click="edit">编辑基本信息</el-button>
-    <el-button size="small" type="warning" @click="editPwd">修改密码</el-button>
-    <!--      <el-popconfirm title="确定删除吗？" @confirm="handleDelete(scope.row.id)" style="margin-left: 5px">-->
-    <!--        <el-button slot="reference" size="small" type="danger">删除</el-button>-->
-    <!--      </el-popconfirm>-->
-
-    <!--    </template>-->
-    <DateBar></DateBar>
-    <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
-      <el-form ref="form" :rules="rules" :model="form" label-width="80px">
-        <el-form-item label="用户名" style="width: 80%" prop="form.userName">
-          <el-input v-model="form.userName"></el-input>
-        </el-form-item>
-        <el-form-item label="姓名" style="width: 80%" prop="realName">
-          <el-input v-model="form.realName"></el-input>
-        </el-form-item>
-        <el-form-item label="性别">
-          <el-radio-group v-model="form.sex">
-            <el-radio label="0">男</el-radio>
-            <el-radio label="1">女</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="邮箱" style="width: 80%" prop="email">
-          <el-input v-model="form.email"></el-input>
-        </el-form-item>
-        <el-form-item label="手机号" style="width: 80%" prop="phonenumber">
-          <el-input v-model="form.phonenumber"></el-input>
-        </el-form-item>
+    <div v-show="isEdit">
+      <el-form ref="form" style="width: 100%" :rules="rules" :model="form" label-width="15px">
+        <el-descriptions :label-style="{ height: '80px', width: '15%'}" :contentStyle="{height:'80px',width:'200px'}" title="个人中心" :column="2" size="40" border>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-s-custom"></i>
+              账号
+            </template>
+            {{ user.userName }}
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-tickets"></i>
+              角色
+            </template>
+            <el-tag
+                type="success"
+                disable-transitions>{{ user.roleId == 0 ? "超级管理员" : (user.roleId == 1 ? "管理员" : "用户") }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-mobile-phone"></i>
+              电话
+            </template>
+            <el-form-item label=" " style="width: 80%" prop="phonenumber">
+              <el-input v-model="form.phonenumber"></el-input>
+            </el-form-item>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-box"></i>
+              邮箱
+            </template>
+            <el-form-item label=" " style="width: 80%" prop="email">
+              <el-input v-model="form.email"></el-input>
+            </el-form-item>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-location-outline"></i>
+              性别
+            </template>
+            <el-form-item>
+              <el-radio-group  v-model="form.sex">
+                <el-radio label="0">男</el-radio>
+                <el-radio label="1">女</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-descriptions-item>
+          <el-descriptions-item>
+            <template slot="label">
+              <i class="el-icon-box"></i>
+              姓名
+            </template>
+            <el-form-item label=" " style="width: 80%" prop="realName">
+              <el-input v-model="form.realName"></el-input>
+            </el-form-item>
+          </el-descriptions-item>
+        </el-descriptions>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button @click="isEdit = false">取 消</el-button>
         <el-button type="primary" @click="save">确 定</el-button>
       </span>
-    </el-dialog>
+    </div>
+    <div v-show="!isEdit">
+      <el-descriptions :label-style="{ height: '80px', width: '15%'}" :contentStyle="{height:'80px',width:'200px'}" title="个人中心" :column="2" size="40" border>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-s-custom"></i>
+            账号
+          </template>
+          {{ user.userName }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-tickets"></i>
+            角色
+          </template>
+          <el-tag
+              type="success"
+              disable-transitions>{{ user.roleId == 0 ? "超级管理员" : (user.roleId == 1 ? "管理员" : "用户") }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-mobile-phone"></i>
+            电话
+          </template>
+          {{ user.phonenumber }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-box"></i>
+            邮箱
+          </template>
+          {{ user.email }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-location-outline"></i>
+            性别
+          </template>
+          <el-tag
+              :type="user.sex === '0' ? 'primary' : 'danger'"
+              disable-transitions><i
+              :class="user.sex==0?'el-icon-male':'el-icon-female'"></i>{{ user.sex == 0 ? "男" : "女" }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template slot="label">
+            <i class="el-icon-box"></i>
+            姓名
+          </template>
+          {{ user.realName }}
+        </el-descriptions-item>
+
+      </el-descriptions>
+      <el-button size="small" type="success" @click="edit">编辑信息</el-button>
+      <el-button size="small" type="warning" @click="editPwd">修改密码</el-button>
+    </div>
+    <DateBar></DateBar>
     <el-dialog title="提示" :visible.sync="pwdChange" width="30%" center>
       <el-form :model="pwdForm" :rules="pwdRules" status-icon ref="pwdForm" label-width="100px">
         <el-form-item label="新密码" style="width: 80%" prop="pwd1">
           <el-input type="password" v-model="pwdForm.pwd1"></el-input>
         </el-form-item>
-        <el-form-item label="确认新密码" style="width: 80%" prop="pwd2">
+        <el-form-item  label="确认新密码" style="margin-top: 15px; width: 80%" prop="pwd2">
           <el-input type="password" v-model="pwdForm.pwd2"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary"  @click="savePwd">提交</el-button>
-<!--          <el-button @click="resetForm('ruleForm')">重置</el-button>-->
+          <el-button style="margin-top: 20px" type="primary" @click="savePwd">提交</el-button>
+          <el-button style="margin-top: 20px" @click="resetForm('pwdForm')">重置</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -106,7 +143,7 @@
 
 <script>
 import DateBar from "../utils/DateBar";
-import {getInfo, updateUser, getUser,updatePassword} from "@/api/user";
+import {getInfo, updateUser, getUser, updatePassword} from "@/api/user";
 
 export default {
   name: "Home",
@@ -125,16 +162,16 @@ export default {
     var validatePwd2 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'));
-      } else if(value!==this.pwdForm.pwd1) {
+      } else if (value !== this.pwdForm.pwd1) {
         callback(new Error('两次输入密码不一致!'));
-      }
-      else {
+      } else {
         callback();
       }
     };
     return {
+      isEdit: false,
       user: {
-        no:'',
+        no: '',
         userName: '',
         realName: '',
         password: '',
@@ -152,21 +189,21 @@ export default {
         email: '',
         phonenumber: '',
       },
-      pwdChange:false,
-      pwdForm:{
+      pwdChange: false,
+      pwdForm: {
         pwd1: '',//新密码
         pwd2: '',//再次确认密码
       },
-      pwdRules:{
+      pwdRules: {
         pwd1: [
           {required: true, message: "请输入密码", trigger: blur},
           {min: 4, message: "至少4个字符", trigger: blur},
-          {validator:validatePwd1,trigger: blur},
+          {validator: validatePwd1, trigger: blur},
         ],
         pwd2: [
           {required: true, message: "请输入密码", trigger: blur},
           {min: 4, message: "至少4个字符", trigger: blur},
-          {validator:validatePwd2,trigger: blur},
+          {validator: validatePwd2, trigger: blur},
         ],
       },
       rules: {
@@ -219,12 +256,13 @@ export default {
       })
     },
     edit() {
+      this.isEdit = true;
       this.form.id = this.user.id;
       this.form = JSON.parse(JSON.stringify(this.user));
-      this.centerDialogVisible = true;
+      //this.centerDialogVisible = true;
     },
-    editPwd(){
-      this.pwdChange=true;
+    editPwd() {
+      this.pwdChange = true;
     },
     save() {
       this.$refs.form.validate((valid) => {
@@ -235,7 +273,8 @@ export default {
                 message: "修改用户成功",
                 type: "success"
               })
-              this.centerDialogVisible = false;
+              //this.centerDialogVisible = false;
+              this.isEdit=false;
               this.refresh(this.form.id);
             } else {
               this.$message({
@@ -250,11 +289,11 @@ export default {
         }
       });
     },
-    savePwd(){
+    savePwd() {
       this.$refs.pwdForm.validate((valid) => {
         if (valid) {
-          this.form.id=this.user.id;
-          this.form.password=this.pwdForm.pwd1;
+          this.form.id = this.user.id;
+          this.form.password = this.pwdForm.pwd1;
           updatePassword(this.form).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -276,6 +315,9 @@ export default {
         }
       });
     },
+    resetForm(formName){
+      this.$refs[formName].resetFields();
+    }
   },
 
   created() {
@@ -287,8 +329,21 @@ export default {
 <style scoped>
 .el-descriptions {
   width: 90%;
-
-  margin: 0 auto;
+  margin: 10px auto;
   text-align: center;
+}
+
+.el-descriptions-item {
+  /*padding: 10px 10px;*/
+}
+
+.el-form-item {
+  margin: 0px 0px;
+}
+
+.el-button{
+  margin-top: 20px;
+  margin-left: 20px;
+  justify-content:center;
 }
 </style>

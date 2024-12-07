@@ -64,3 +64,9 @@ export function logout() {
         method: 'post',
     })
 }
+export function getRouters() {
+    return request({
+        url: '/user/getRouters',
+        method:'get'
+    })
+}

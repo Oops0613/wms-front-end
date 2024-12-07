@@ -20,6 +20,7 @@
 <script>
 import request from "@/request";
 import {logout,getInfo} from "@/api/user";
+import {resetRouter} from "@/router";
 
 export default {
   name:"Header",
@@ -54,6 +55,7 @@ export default {
         this.$router.push("/");
         logout().then(res=>{
           if(res.code==200){
+            //resetRouter();
             sessionStorage.clear();
           }
           else {

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
 <!--    <el-button type="info">按钮</el-button>-->
-    <router-view/>
+    <RouterView/>
   </div>
 </template>
 
@@ -13,6 +13,22 @@ export default {
   name: 'App',
   components: {
     //Index
+  },
+  data(){
+    return{
+      user:sessionStorage.getItem("token")
+    }
+  },
+  watch:{
+    '$store.state.menu':{
+      handler(val,old){
+        console.log("val",val)
+        if(!old&&this.user){
+          this.$store.commit("setMenu",val)
+        }
+      },
+      immediate:true
+    }
   }
 }
 </script>
