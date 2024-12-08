@@ -7,6 +7,7 @@ const routes=[
     },
     {
         path:"/Index",
+        //redirect:'/Home',
         name:"index",
         component:()=>import("../components/Index"),
         children:[
@@ -60,10 +61,14 @@ export function resetRouter() {
     //     mode:'history',
     //     routes: []
     // }).matcher
+    console.log("重置前：",router)
+
     const newRouter = new VueRouter({
         mode:"history",
         routes:[]
     })
-    router.matcher = newRouter.matcher
+    console.log("空白路由：",newRouter);
+    router.matcher = newRouter.matcher;
+    console.log("重置后：",router)
 }
 export default router;

@@ -42,7 +42,6 @@ function addNewRoute(menuList) {
         }
     })
     console.log("添加后",routes)
-
     resetRouter()
     router.addRoutes(routes)
 }

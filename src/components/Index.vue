@@ -37,6 +37,9 @@ export default {
       this.sideWidth=this.isCollapse?64:200;
       this.icon=this.isCollapse?"el-icon-s-unfold":"el-icon-s-fold"
     }
+  },
+  created() {
+    //this.$router.push("/Home");
   }
 
 };

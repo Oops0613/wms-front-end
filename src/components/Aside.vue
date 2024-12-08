@@ -54,44 +54,6 @@ export default {
   },
   methods: {
     fetchMenuData() {
-      //this.menuData=this.$store.state.menu;
-      // 模拟从后端获取导航数据
-      // 你可以使用 axios 或其他 HTTP 请求库来从服务器获取数据
-      // 这里直接用示例数据
-  //     this.menuData = [
-  //       {
-  //         id: 1,
-  //         label: '首页',
-  //         url: '/Home',
-  //         icon:'el-icon-s-home',
-  //       },
-  //       {
-  //         id: 2,
-  //         label: '系统管理',
-  //         url: '/system',
-  //         icon:'el-icon-setting',
-  //         children: [
-  //           {
-  //             id: 3,
-  //             label: '用户管理',
-  //             url: '/system/user',
-  //             icon:'el-icon-setting',
-  //           },
-  //           {
-  //             id: 4,
-  //             label: '角色管理',
-  //             url: '/system/role',
-  //             icon:'el-icon-setting',
-  //           },
-  //           {
-  //             id: 5,
-  //             label: '菜单管理',
-  //             url: '/system/menu',
-  //             icon:'el-icon-setting',
-  //           }
-  //         ]
-  //       },
-  //     ];
      }
    }
 };

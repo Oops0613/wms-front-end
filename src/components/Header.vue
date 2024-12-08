@@ -62,7 +62,7 @@ export default {
             alert("res.msg");
           }
         })
-
+        //location.reload();//刷新页面，清空router存放的路由@TODO 有待改进
 
       }).catch(()=>{
         this.$message({
@@ -84,6 +84,9 @@ export default {
         }
       })
     }
+  },
+  created() {
+
   },
   mounted() {
     this.initUser();
