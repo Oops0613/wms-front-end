@@ -57,18 +57,19 @@ router.beforeEach((to, from, next) => {
     }
 });
 export function resetRouter() {
-    // router.matcher = new VueRouter({
-    //     mode:'history',
-    //     routes: []
-    // }).matcher
-    console.log("重置前：",router)
-
-    const newRouter = new VueRouter({
-        mode:"history",
-        routes:[]
-    })
-    console.log("空白路由：",newRouter);
-    router.matcher = newRouter.matcher;
-    console.log("重置后：",router)
+    router.matcher = new VueRouter({
+        mode:'history',
+        routes: routes
+    }).matcher
+    router.options.routes=[];//@TODO 手动清除路由
+    // console.log("重置前：",router)
+    //
+    // const newRouter = new VueRouter({
+    //     mode:"history",
+    //     routes:[]
+    // })
+    // console.log("空白路由：",newRouter);
+    // router.matcher = newRouter.matcher;
+     console.log("重置后：",router)
 }
 export default router;

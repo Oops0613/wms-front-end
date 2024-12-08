@@ -62,6 +62,7 @@ export default {
             alert("res.msg");
           }
         })
+        //this.$store.commit('clearRoute');
         //location.reload();//刷新页面，清空router存放的路由@TODO 有待改进
 
       }).catch(()=>{
