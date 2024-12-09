@@ -20,10 +20,10 @@
 <script>
 import Aside from "@/components/Aside.vue";
 import Header from "@/components/Header.vue";
-import Main from "@/components/Main.vue";
+import User from "@/components/system/user/index.vue"
 
 export default {
-  components: {Header, Aside,Main},
+  components: {Header, Aside,User},
   data(){
     return{
       isCollapse:false,
@@ -38,9 +38,6 @@ export default {
       this.icon=this.isCollapse?"el-icon-s-unfold":"el-icon-s-fold"
     }
   },
-  created() {
-    //this.$router.push("/Home");
-  }
 
 };
 </script>

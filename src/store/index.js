@@ -4,51 +4,48 @@ import router, {resetRouter} from "../router";
 import createPersistedState from 'vuex-persistedstate'
 
 vue.use(Vuex)
+function dfs(menuList,container){
+    if(menuList===[]||menuList===null||menuList===undefined){
+        return [];
+    }
+    menuList.forEach(menu=>{
+        //把每一个符合条件的menu转化成路由
+        let route={}
+        if(menu.menuType === 'C'){
+            route={
+                path:'/' + menu.path,
+                name: menu.menuName,
+                meta: {
+                    title: menu.menuName
+                },
+                component: () => import('@/components/' + menu.component),
+                children: []
+            }
+            container.push(route);
+        }
+        //该目录下还有子目录
+        if(menu.children){
+            dfs(menu.children,container);
+        }
+
+    })
+    return container;
+}
 
 function addNewRoute(menuList) {
-    console.log(menuList)
     let routes = router.options.routes
+    console.log("menuList",menuList)
     console.log("添加前", routes)
     routes.forEach(routeItem => {
         if (routeItem.path == "/Index") {
-            menuList.forEach(menu => {
-                let childRoute = {
-                    path: '/' + menu.path,
-                    name: menu.menuName,
-                    meta: {
-                        title: menu.menuName
-                    },
-                    component: () => import('../components/' + menu.component),
-                    children: []
-                };
-                if (menu.children) {
-                    let childs = menu.children;
-                    childs.forEach(child => {
-                        let grandsonRoute = {
-                            path: '/' + child.path,
-                            name: child.menuName,
-                            meta: {
-                                title: child.menuName
-                            },
-                            component: () => import('../components/' + child.component),
-                            children: []
-                        }
-                        routeItem.children.push(grandsonRoute);
-                    })
-                }
-                if (menu.menuType === 'C') {
-                    routeItem.children.push(childRoute)
-                }
-            })
+            //把后端返回的路由都平铺添加到/Index的children数组中
+            //尝试深度遍历menuList树，找出其中menuType === 'C'的menu
+            let arr=[];
+            dfs(menuList,routeItem.children);
         }
     })
-    console.log("添加后", routes)
     resetRouter()
     router.addRoutes(routes)
-    setTimeout(function() {
-        console.log("最终路由：",router)
-    }, 5000); // 定时时间
-
 }
 
 export default new Vuex.Store({

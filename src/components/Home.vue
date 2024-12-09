@@ -171,7 +171,7 @@ export default {
     return {
       isEdit: false,
       user: {
-        no: '',
+        id: '',
         userName: '',
         realName: '',
         password: '',
@@ -235,6 +235,8 @@ export default {
         console.log("个人中心获取用户信息", res);
         if (res.code == 200) {
           this.user = res.data.user;
+          console.log("个人中心获取用户信息后", this.user);
+          this.refresh(this.user.id);
         }
       })
       const curTime = new Date();
@@ -322,7 +324,7 @@ export default {
 
   created() {
     this.init()
-  }
+  },
 }
 </script>
 

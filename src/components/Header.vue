@@ -92,6 +92,7 @@ export default {
   mounted() {
     this.initUser();
     this.$router.push("/Home")
+    console.log('重定向至Home')
   },
   props:{
     icon:String

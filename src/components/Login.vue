@@ -63,11 +63,13 @@ export default {
               getRouters().then(res2=>{
                 console.log("路由,",res2.data.menus);
                 this.$store.commit("setMenu",res2.data.menus);
+                this.$router.replace('/Index');
               })
               //console.log(res.data.menu)
 
               //跳转到主页
-              this.$router.replace('/Index');
+              //this.$router.push('/Index');
+
             }else{
               this.confirm_disabled=false;
               alert('校验失败，用户名或密码错误！');
