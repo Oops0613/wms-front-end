@@ -21,9 +21,20 @@
 import Aside from "@/components/Aside.vue";
 import Header from "@/components/Header.vue";
 import User from "@/components/system/user/index.vue"
-
+import Role from "@/components/system/role/index.vue"
+import WareHouse from "@/components/warehouse/index.vue"
+import Category from "@/components/category/index.vue"
+import Goods from "@/components/goods/index.vue";
+import InApply from "@/components/apply/in/index.vue"
+import OutApply from "@/components/apply/out/index.vue"
+import Approve from "@/components/approve/index.vue"
 export default {
-  components: {Header, Aside,User},
+  components: {
+    Header, Aside,
+    User, Role,
+    WareHouse,
+    Category,Goods,
+    InApply,OutApply,Approve},
   data(){
     return{
       isCollapse:false,
