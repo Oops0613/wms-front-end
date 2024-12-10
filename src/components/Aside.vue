@@ -33,8 +33,6 @@ export default {
     return {
       // 当前激活的菜单项，通常来自 Vue Router 的路径
       activeMenu: '/Home',
-      // 后端返回的菜单数据
-      menuData: [],
       //isCollapse: false,
     };
   },
@@ -49,12 +47,8 @@ export default {
     isCollapse: Boolean,
   },
   mounted() {
-    // 假设你有一个方法从后端获取数据
-    this.fetchMenuData();
   },
   methods: {
-    fetchMenuData() {
-     }
    }
 };
 </script>

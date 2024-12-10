@@ -1,9 +1,9 @@
 <template>
   <div>
     <div style="margin-bottom: 5px">
-<!--      <el-input v-model="queryParams.realName" placeholder="输入姓名" style="width: 150px" suffix-icon="el-icon-search"-->
-<!--        @keyup.enter.native="loadget">-->
-<!--      </el-input>-->
+      <el-input v-model="queryParams.realName" placeholder="输入姓名" style="width: 150px" suffix-icon="el-icon-search"
+        @keyup.enter.native="loadget">
+      </el-input>
       <el-input v-model="queryParams.phonenumber" placeholder="输入手机号" style="width: 150px" suffix-icon="el-icon-search"
         @keyup.enter.native="loadget">
       </el-input>
@@ -39,7 +39,9 @@
           <el-popconfirm title="确定删除吗？" @confirm="handleDelete(scope.row.id)" style="margin-left: 5px">
             <el-button slot="reference" size="small" type="danger">删除</el-button>
           </el-popconfirm>
-
+          <el-popconfirm :title="'确定重置用户'+scope.row.realName+'的密码？'" @confirm="handleResetPwd(scope.row.id)" style="margin-left: 5px">
+            <el-button slot="reference" size="small" type="warning">重置密码</el-button>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -52,11 +54,11 @@
         <el-form-item label="用户名" style="width: 80%" prop="userName">
           <el-input v-model="form.userName"></el-input>
         </el-form-item>
-        <div v-if="adding">
-        <el-form-item label="密码" style="width: 80%" prop="password">
-          <el-input v-model="form.password"></el-input>
-        </el-form-item>
-        </div>
+<!--        <div v-if="adding">-->
+<!--        <el-form-item label="密码" style="width: 80%" prop="password">-->
+<!--          <el-input v-model="form.password"></el-input>-->
+<!--        </el-form-item>-->
+<!--        </div>-->
         <el-form-item label="姓名" style="width: 80%" prop="realName">
           <el-input v-model="form.realName"></el-input>
         </el-form-item>
@@ -81,11 +83,14 @@
   </div>
 </template>
 <script>
-import {listUser,
-        getUser,
-        addUser,
-        updateUser,
-        delUser}
+import {
+  listUser,
+  getUser,
+  addUser,
+  updateUser,
+  delUser,
+  resetPassword
+}
   from "@/api/user"
 export default {
   name: "User",
@@ -95,7 +100,7 @@ export default {
       tableData: [],
       queryParams:{
         pageNum: 1,
-        pageSize: 2,
+        pageSize: 10,
         realName:'',
         phonenumber:''
       },
@@ -104,7 +109,6 @@ export default {
       form: {
         userName: '',
         realName: '',
-        password: '',
         sex: '',
         email: '',
         phonenumber:'',
@@ -196,11 +200,28 @@ export default {
         }
       })
     },
+    handleResetPwd(id) {
+      //console.log(id)
+      resetPassword(id).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: "密码已重置为'1234'",
+            type: "success"
+          })
+          this.loadget();
+        } else {
+          this.$message({
+            message: res.msg,
+            type: "error"
+          })
+        }
+      })
+    },
     add() {
       this.adding=true;
       this.centerDialogVisible = true;
       this.$nextTick(() => {
-        this.form.password='';
+        //this.form.password='';
         this.resetForm();
       })
     },
@@ -251,20 +272,17 @@ export default {
       //this.order = ''
     },
     resetForm() {
-      //this.$refs.form.resetFields();
-      this.form = {
-        id: undefined,
-        userName: undefined,
-        nickName: undefined,
-        password: undefined,
-        phonenumber: undefined,
-        email: undefined,
-        sex: undefined,
-        status: '0',
-        remark: undefined,
-        roleIds: []
-      }
-      this.resetForm('form')
+      this.$refs.form.resetFields();
+      // this.form = {
+      //   id: '',
+      //   userName: '',
+      //   realName: '',
+      //   phonenumber: '',
+      //   email: '',
+      //   sex: '',
+      //   //roleIds: []
+      // }
+      // this.resetForm('form')
     },
   },
   beforeMount() {
@@ -273,4 +291,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.el-input{
+  margin-left: 8px;
+}
+</style>

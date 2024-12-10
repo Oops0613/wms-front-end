@@ -38,6 +38,12 @@ export function updatePassword(data) {
         data: data
     })
 }
+export function resetPassword(userId) {
+    return request({
+        url: '/user/resetPassword/'+userId,
+        method: 'post',
+    })
+}
 // 删除用户
 export function delUser(userId) {
     return request({
