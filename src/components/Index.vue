@@ -28,13 +28,16 @@ import Goods from "@/components/goods/index.vue";
 import InApply from "@/components/apply/in/index.vue"
 import OutApply from "@/components/apply/out/index.vue"
 import Approve from "@/components/approve/index.vue"
+import Allot from "@/components/apply/allot/index.vue";
+import Inventory from "@/components/inventory/index.vue";
 export default {
   components: {
     Header, Aside,
     User, Role,
     WareHouse,
     Category,Goods,
-    InApply,OutApply,Approve},
+    Inventory,
+    InApply,OutApply,Allot,Approve},
   data(){
     return{
       isCollapse:false,
