@@ -1,4 +1,11 @@
 import request from "@/request";
+// 查询所有角色
+export function listAllRole() {
+    return request({
+        url: '/role/listAllRole',
+        method: 'get'
+    })
+}
 //查询用户列表
 export function listRole(query){
     return request({

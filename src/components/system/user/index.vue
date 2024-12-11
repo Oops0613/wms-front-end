@@ -23,9 +23,15 @@
       </el-table-column>
       <el-table-column prop="realName" label="姓名" width="120">
       </el-table-column>
-      <el-table-column prop="sex" label="性别" width="120">
+      <el-table-column prop="role" label="角色" width="100">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.sex === '1' ? 'primary' : 'success'" disable-transitions>{{ scope.row.sex === '0' ? '男' : '女' }}
+          <el-tag :type="scope.row.roleId === '1' ? 'danger' : 'success'" disable-transitions>{{scope.row.roleName}}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="sex" label="性别" width="80">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.sex === '0' ? 'primary' : 'danger'" disable-transitions>{{ scope.row.sex === '0' ? '男' : '女' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -83,15 +89,9 @@
   </div>
 </template>
 <script>
-import {
-  listUser,
-  getUser,
-  addUser,
-  updateUser,
-  delUser,
-  resetPassword
-}
-  from "@/api/user"
+import {addUser, delUser, getUser, listUser, resetPassword, updateUser} from "@/api/user"
+import {listAllRole} from "@/api/role"
+
 export default {
   name: "User",
   data() {
@@ -109,10 +109,13 @@ export default {
       form: {
         userName: '',
         realName: '',
+        role:'',
         sex: '',
         email: '',
         phonenumber:'',
       },
+      roleName:'',
+      roles:[],
       rules: {
         userName: [
           { required: true, message: "请输入用户名", trigger: blur },
@@ -217,7 +220,7 @@ export default {
         }
       })
     },
-    add() {
+    add(){
       this.adding=true;
       this.centerDialogVisible = true;
       this.$nextTick(() => {
@@ -244,16 +247,30 @@ export default {
     },
 
     loadget() {
+      //加载已有的角色列表
+      listAllRole().then(res=>{
+        this.roles=res.data;
+        //console.log(this.roles)
+      })
       listUser(this.queryParams).then(res => {
         //console.log(res)
         //console.log("msn", res.data)
         if (res.code === 200) {
           this.tableData = res.data.rows;
+          //console.log("table",this.tableData)
+          //给列表每行添加roleName
+          this.tableData.forEach(row=>{
+            //console.log("row",row)
+            let roleName=this.getRoleNameById(row.roleId);
+            row.roleName=roleName
+            console.log(row.id,roleName)
+          })
           this.total = parseInt(res.data.total);
         } else {
           alert("获取失败");
         }
       })
+
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
@@ -273,17 +290,15 @@ export default {
     },
     resetForm() {
       this.$refs.form.resetFields();
-      // this.form = {
-      //   id: '',
-      //   userName: '',
-      //   realName: '',
-      //   phonenumber: '',
-      //   email: '',
-      //   sex: '',
-      //   //roleIds: []
-      // }
-      // this.resetForm('form')
     },
+    getRoleNameById(id){
+      for(let role of this.roles){
+        if(role.id===id){
+          return role.roleName;
+        }
+      }
+      return "";
+    }
   },
   beforeMount() {
     this.loadget()
