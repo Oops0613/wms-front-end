@@ -60,9 +60,9 @@ export default {
               console.log(res.data.user);
               sessionStorage.setItem("token",res.data.token);
                 //setToken(res.token);
-              getRouters().then(res2=>{
-                console.log("路由,",res2.data.menus);
-                this.$store.commit("setMenu",res2.data.menus);
+              getRouters().then(res=>{
+                console.log("路由,",res.data.menus);
+                this.$store.commit("setMenu",res.data.menus);
                 this.$router.replace('/Index');
               })
               //console.log(res.data.menu)

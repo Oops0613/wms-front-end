@@ -27,6 +27,8 @@
     </el-menu>
 </template>
 <script>
+import {getRouters} from "@/api/user";
+
 export default {
   name: "Aside",
   data() {
@@ -46,10 +48,12 @@ export default {
   props: {
     isCollapse: Boolean,
   },
-  mounted() {
-  },
-  methods: {
-   }
+  created() {
+    getRouters().then(res=>{
+      console.log("aside刷新")
+      this.$store.commit("setMenu",res.data.menus);
+    })
+  }
 };
 </script>
 <style scoped>

@@ -55,16 +55,11 @@
       :page-sizes="[2, 5, 10, 20]" :page-size="queryParams.pageSize" layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
-    <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
-      <el-form ref="form" :rules="rules" :model="form" label-width="80px">
+    <el-dialog title="提示" :visible.sync="open" width="30%" center>
+      <el-form ref="form" status-icon :rules="rules" :model="form" label-width="80px">
         <el-form-item label="用户名" style="width: 80%" prop="userName">
           <el-input v-model="form.userName"></el-input>
         </el-form-item>
-<!--        <div v-if="adding">-->
-<!--        <el-form-item label="密码" style="width: 80%" prop="password">-->
-<!--          <el-input v-model="form.password"></el-input>-->
-<!--        </el-form-item>-->
-<!--        </div>-->
         <el-form-item label="姓名" style="width: 80%" prop="realName">
           <el-input v-model="form.realName"></el-input>
         </el-form-item>
@@ -80,9 +75,20 @@
         <el-form-item label="手机号" style="width: 80%" prop="phonenumber">
           <el-input v-model="form.phonenumber"></el-input>
         </el-form-item>
+
+        <el-form-item label="角色" style="width: 80%" prop="roleId" >
+          <el-select v-model="form.roleId" clearable placeholder="请选择角色">
+            <el-option
+                v-for="item in roles"
+            :key="item.id"
+            :label="item.roleName"
+            :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button @click="open = false">取 消</el-button>
         <el-button type="primary" @click="save">确 定</el-button>
       </span>
     </el-dialog>
@@ -105,11 +111,11 @@ export default {
         phonenumber:''
       },
       total: 0,
-      centerDialogVisible: false,
+      open: false,
       form: {
         userName: '',
         realName: '',
-        role:'',
+        roleId:'',
         sex: '',
         email: '',
         phonenumber:'',
@@ -118,24 +124,23 @@ export default {
       roles:[],
       rules: {
         userName: [
-          { required: true, message: "请输入用户名", trigger: blur },
-          { min: 4,max:8, message: "长度4~8个字符", trigger: blur }
+          { required: true, message: "请输入用户名", trigger: 'blur' },
+          { min: 4,max:8, message: "长度4~8个字符", trigger: 'blur' }
         ],
         realName: [
-          { required: true, message: "请输入用户姓名", trigger: blur },
-          { min: 2, message: "至少2个字符", trigger: blur }
-        ],
-        password: [
-          { required: true, message: "请输入密码", trigger: blur },
-          { min: 4, message: "至少4个字符", trigger: blur }
+          { required: true, message: "请输入用户姓名", trigger: 'blur' },
+          { min: 2, message: "至少2个字符", trigger: 'blur' }
         ],
         phonenumber: [
-          { required: true, message: "请输入手机号码", trigger: blur },
-          { pattern:/^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: blur }
+          { required: true, message: "请输入手机号码", trigger: 'blur' },
+          { pattern:/^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: 'blur' }
         ],
         email: [
-          { required: true, message: "请输入邮箱", trigger: blur },
-          { pattern:/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/, message: "请输入正确的邮箱", trigger: blur }
+          { required: true, message: "请输入邮箱", trigger: 'blur' },
+          { pattern:/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/, message: "请输入正确的邮箱", trigger: 'blur' }
+        ],
+        roleId:[
+          { required: true, message: "请选择角色", trigger: 'change' },
         ]
       },
 
@@ -167,7 +172,7 @@ export default {
       //console.log(row)
       this.handleGet(row.id);
       this.form.id = row.id;
-      this.centerDialogVisible = true;
+      this.open = true;
     },
     handleEdit() {
       updateUser(this.form).then(res => {
@@ -176,7 +181,7 @@ export default {
             message: "修改用户成功",
             type: "success"
           })
-          this.centerDialogVisible = false;
+          this.open = false;
           this.loadget();
         } else {
           this.$message({
@@ -222,7 +227,7 @@ export default {
     },
     add(){
       this.adding=true;
-      this.centerDialogVisible = true;
+      this.open = true;
       this.$nextTick(() => {
         //this.form.password='';
         this.resetForm();
@@ -235,7 +240,7 @@ export default {
             message: "新增用户成功",
             type: "success"
           })
-          this.centerDialogVisible = false;
+          this.open = false;
           this.loadget();
         } else {
           this.$message({

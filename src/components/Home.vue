@@ -16,9 +16,8 @@
               <i class="el-icon-tickets"></i>
               角色
             </template>
-            <el-tag
-                type="success"
-                disable-transitions>{{ user.roleId == 0 ? "超级管理员" : (user.roleId == 1 ? "管理员" : "用户") }}
+            <el-tag v-if="!this.loading" :type="user.roleId === '1' ? 'danger' : 'success'" disable-transitions>
+              {{user.roleName}}
             </el-tag>
           </el-descriptions-item>
           <el-descriptions-item>
@@ -32,7 +31,7 @@
           </el-descriptions-item>
           <el-descriptions-item>
             <template slot="label">
-              <i class="el-icon-box"></i>
+              <i class="el-icon-message"></i>
               邮箱
             </template>
             <el-form-item label=" " style="width: 80%" prop="email">
@@ -41,7 +40,7 @@
           </el-descriptions-item>
           <el-descriptions-item>
             <template slot="label">
-              <i class="el-icon-location-outline"></i>
+              <i class="el-icon-s-opportunity"></i>
               性别
             </template>
             <el-form-item>
@@ -81,9 +80,8 @@
             <i class="el-icon-tickets"></i>
             角色
           </template>
-          <el-tag
-              type="success"
-              disable-transitions>{{ user.roleId == 0 ? "超级管理员" : (user.roleId == 1 ? "管理员" : "用户") }}
+          <el-tag v-if="!this.loading" :type="user.roleId === '1' ? 'danger' : 'success'" disable-transitions>
+            {{user.roleName}}
           </el-tag>
         </el-descriptions-item>
         <el-descriptions-item>
@@ -95,14 +93,14 @@
         </el-descriptions-item>
         <el-descriptions-item>
           <template slot="label">
-            <i class="el-icon-box"></i>
+            <i class="el-icon-message"></i>
             邮箱
           </template>
           {{ user.email }}
         </el-descriptions-item>
         <el-descriptions-item>
           <template slot="label">
-            <i class="el-icon-location-outline"></i>
+            <i class="el-icon-s-opportunity"></i>
             性别
           </template>
           <el-tag
@@ -111,7 +109,7 @@
               :class="user.sex==0?'el-icon-male':'el-icon-female'"></i>{{ user.sex == 0 ? "男" : "女" }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item>
+        <el-descriptions-item prop="realName">
           <template slot="label">
             <i class="el-icon-box"></i>
             姓名
@@ -144,22 +142,20 @@
 <script>
 import DateBar from "../utils/DateBar";
 import {getInfo, updateUser, getUser, updatePassword} from "@/api/user";
+import {getRole} from "@/api/role"
 
 export default {
   name: "Home",
   components: {DateBar},
   data() {
-    var validatePwd1 = (rule, value, callback) => {
+    const validatePwd1 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入密码'));
       } else {
-        // if (this.pwdForm.pwd1 !== '') {
-        //   this.$refs.pwdForm.validateField('pwd1');
-        // }
         callback();
       }
     };
-    var validatePwd2 = (rule, value, callback) => {
+    const validatePwd2 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'));
       } else if (value !== this.pwdForm.pwd1) {
@@ -169,9 +165,12 @@ export default {
       }
     };
     return {
+      loading:true,
       isEdit: false,
       user: {
         id: '',
+        roleId:'',
+        roleName:'',
         userName: '',
         realName: '',
         password: '',
@@ -180,7 +179,6 @@ export default {
         phonenumber: '',
       },
       greeting: '',
-      centerDialogVisible: false,
       form: {
         userName: '',
         realName: '',
@@ -196,33 +194,33 @@ export default {
       },
       pwdRules: {
         pwd1: [
-          {required: true, message: "请输入密码", trigger: blur},
-          {min: 4, message: "至少4个字符", trigger: blur},
-          {validator: validatePwd1, trigger: blur},
+          {required: true, message: "请输入密码", trigger: 'blur'},
+          {min: 4, message: "至少4个字符", trigger: 'blur'},
+          {validator: validatePwd1, trigger: 'blur'},
         ],
         pwd2: [
-          {required: true, message: "请输入密码", trigger: blur},
-          {min: 4, message: "至少4个字符", trigger: blur},
-          {validator: validatePwd2, trigger: blur},
+          {required: true, message: "请输入密码", trigger: 'blur'},
+          {min: 4, message: "至少4个字符", trigger: 'blur'},
+          {validator: validatePwd2, trigger: 'blur'},
         ],
       },
       rules: {
         userName: [
-          {required: true, message: "请输入用户名", trigger: blur},
-          {min: 4, max: 8, message: "长度4~8个字符", trigger: blur}
+          {required: true, message: "请输入用户名", trigger: 'blur'},
+          {min: 4, max: 8, message: "长度4~8个字符", trigger: 'blur'}
         ],
         realName: [
-          {required: true, message: "请输入用户姓名", trigger: blur},
-          {min: 2, message: "至少2个字符", trigger: blur}
+          {required: true, message: "请输入用户姓名", trigger: 'blur'},
+          {min: 2, message: "至少2个字符", trigger: 'blur'}
         ],
 
         phonenumber: [
-          {required: true, message: "请输入手机号码", trigger: blur},
-          {pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: blur}
+          {required: true, message: "请输入手机号码", trigger: 'blur'},
+          {pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号码", trigger: 'blur'}
         ],
         email: [
-          {required: true, message: "请输入邮箱", trigger: blur},
-          {pattern: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/, message: "请输入正确的邮箱", trigger: blur}
+          {required: true, message: "请输入邮箱", trigger: 'blur'},
+          {pattern: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/, message: "请输入正确的邮箱", trigger: 'blur'}
         ]
       },
     }
@@ -251,9 +249,15 @@ export default {
       }
     },
     refresh(id) {
+      this.loading=true;
       getUser(id).then(res => {
         if (res.code == 200) {
           this.user = res.data;
+          let roleId=this.user.roleId;
+          getRole(roleId).then(res=>{
+            this.user.roleName=res.data.roleName;
+            this.loading=false;
+          })
         }
       })
     },
@@ -261,10 +265,10 @@ export default {
       this.isEdit = true;
       this.form.id = this.user.id;
       this.form = JSON.parse(JSON.stringify(this.user));
-      //this.centerDialogVisible = true;
     },
     editPwd() {
       this.pwdChange = true;
+      this.resetForm('pwdForm')
     },
     save() {
       this.$refs.form.validate((valid) => {
@@ -275,7 +279,6 @@ export default {
                 message: "修改用户成功",
                 type: "success"
               })
-              //this.centerDialogVisible = false;
               this.isEdit=false;
               this.refresh(this.form.id);
             } else {
@@ -302,7 +305,6 @@ export default {
                 message: "修改密码成功",
                 type: "success"
               })
-              this.centerDialogVisible = false;
               this.refresh(this.form.id);
             } else {
               this.$message({
@@ -321,7 +323,6 @@ export default {
       this.$refs[formName].resetFields();
     }
   },
-
   created() {
     this.init()
   },

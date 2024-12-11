@@ -35,7 +35,7 @@
                  :total="total">
   </el-pagination>
     <el-dialog title="提示" :visible.sync="open" width="30%" center>
-      <el-form ref="form" :rules="rules" :model="form" label-width="120px">
+      <el-form ref="form" status-icon :rules="rules" :model="form" label-width="120px">
         <el-form-item label="角色名" style="width: 80%" prop="roleName">
           <el-input v-model="form.roleName"></el-input>
         </el-form-item>
