@@ -23,9 +23,9 @@
     </el-table-column>
     <el-table-column prop="operate" label="操作">
       <template slot-scope="scope">
-        <el-button size="small" type="success" @click="edit(scope.row)">编辑</el-button>
+        <el-button size="small" icon="el-icon-edit" type="text" @click="edit(scope.row)">编辑</el-button>
         <el-popconfirm title="确定删除吗？" @confirm="handleDelete(scope.row.id)" style="margin-left: 5px">
-          <el-button slot="reference" size="small" type="danger">删除</el-button>
+          <el-button slot="reference" size="small" icon="el-icon-delete" type="text">删除</el-button>
         </el-popconfirm>
       </template>
     </el-table-column>

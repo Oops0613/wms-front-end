@@ -5,7 +5,7 @@
              background-color="#323232"
              text-color="#fff"
              active-text-color="#26ffdf"
-             style="height: 100vh"
+             style="height: 100vh;width: 200px"
              :collapse='isCollapse'
              :collapse-transition="false"
              router

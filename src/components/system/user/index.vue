@@ -2,16 +2,16 @@
   <div>
     <div style="margin-bottom: 5px">
       <el-input v-model="queryParams.realName" placeholder="输入姓名" style="width: 150px" suffix-icon="el-icon-search"
-        @keyup.enter.native="loadget">
+        @keyup.enter.native="getList">
       </el-input>
       <el-input v-model="queryParams.phonenumber" placeholder="输入手机号" style="width: 150px" suffix-icon="el-icon-search"
-        @keyup.enter.native="loadget">
+        @keyup.enter.native="getList">
       </el-input>
 <!--      <el-select v-model="order" filterable placeholder="请选择排序方式" style="margin-left: 5px">-->
 <!--        <el-option v-for="item in orders" :key="item.value" :label="item.label" :value="item.value">-->
 <!--        </el-option>-->
 <!--      </el-select>-->
-      <el-button size="small" type="primary" style="margin-left: 5px" @click="loadget">查询</el-button>
+      <el-button size="small" type="primary" style="margin-left: 5px" @click="getList">查询</el-button>
       <el-button size="small" type="success" @click="resetParam">重置</el-button>
       <el-button size="small" type="success" @click="add">新增</el-button>
 
@@ -41,12 +41,12 @@
       </el-table-column>
       <el-table-column prop="operate" label="操作">
         <template slot-scope="scope">
-          <el-button size="small" type="success" @click="edit(scope.row)">编辑</el-button>
+          <el-button size="small" icon="el-icon-edit" type="text" @click="edit(scope.row)">编辑</el-button>
           <el-popconfirm title="确定删除吗？" @confirm="handleDelete(scope.row.id)" style="margin-left: 5px">
-            <el-button slot="reference" size="small" type="danger">删除</el-button>
+            <el-button slot="reference" size="small" icon="el-icon-delete" type="text">删除</el-button>
           </el-popconfirm>
-          <el-popconfirm :title="'确定重置用户'+scope.row.realName+'的密码？'" @confirm="handleResetPwd(scope.row.id)" style="margin-left: 5px">
-            <el-button slot="reference" size="small" type="warning">重置密码</el-button>
+          <el-popconfirm :title="'确定重置用户'+scope.row.realName+'的密码？'" @confirm="handleResetPwd(scope.row.id)" style="float: right">
+            <el-button slot="reference" size="small" icon="el-icon-refresh" type="text">重置密码</el-button>
           </el-popconfirm>
         </template>
       </el-table-column>
@@ -182,7 +182,7 @@ export default {
             type: "success"
           })
           this.open = false;
-          this.loadget();
+          this.getList();
         } else {
           this.$message({
             message: "修改用户失败",
@@ -199,7 +199,7 @@ export default {
             message: "删除用户成功",
             type: "success"
           })
-          this.loadget();
+          this.getList();
         } else {
           this.$message({
             message: res.msg,
@@ -216,7 +216,7 @@ export default {
             message: "密码已重置为'1234'",
             type: "success"
           })
-          this.loadget();
+          this.getList();
         } else {
           this.$message({
             message: res.msg,
@@ -241,7 +241,7 @@ export default {
             type: "success"
           })
           this.open = false;
-          this.loadget();
+          this.getList();
         } else {
           this.$message({
             message: "新增用户失败",
@@ -251,7 +251,7 @@ export default {
       })
     },
 
-    loadget() {
+    getList() {
       //加载已有的角色列表
       listAllRole().then(res=>{
         this.roles=res.data;
@@ -281,12 +281,12 @@ export default {
       console.log(`每页 ${val} 条`);
       this.queryParams.pageNum = 1;
       this.queryParams.pageSize = val;
-      this.loadget();
+      this.getList();
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.queryParams.pageNum = val;
-      this.loadget();
+      this.getList();
     },
     resetParam() {
       this.queryParams.realName = '';
@@ -306,7 +306,7 @@ export default {
     }
   },
   beforeMount() {
-    this.loadget()
+    this.getList()
   }
 }
 </script>
