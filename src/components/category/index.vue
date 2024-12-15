@@ -1,5 +1,15 @@
 <template>
+
   <div>
+    <div style="padding-bottom: 5px; border-bottom: rgba(169,169,169,0.3) 1px solid">
+      <el-input v-model="queryParams.name" placeholder="输入分类名" style="width: 150px" suffix-icon="el-icon-search"
+                @keyup.enter.native="getList">
+      </el-input>
+      <el-button size="small" type="primary" style="margin-left: 5px" @click="getList">查询</el-button>
+      <!--    <el-button size="small" type="success" @click="resetParam">重置</el-button>-->
+      <el-button size="small" type="success" @click="add">新增</el-button>
+    </div>
+    <!--    <hr align=center width=100% color=#A9A9A9 SIZE=1/>-->
     <el-table
         stripe
         size="medium"
@@ -10,7 +20,7 @@
         :default-expand-all="isExpandAll"
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column prop="name" label="分类名称" :show-overflow-tooltip="true" width="160"/>
+      <el-table-column prop="name" label="分类名称" :show-overflow-tooltip="true" width="200"/>
       <!--      <el-table-column prop="icon" label="图标" align="center" width="100">-->
       <!--      <template slot-scope="scope">-->
       <!--        <svg-icon :icon-class="scope.row.icon" />-->
@@ -55,12 +65,12 @@
     <el-dialog :title="title" :visible.sync="open" width="30%" center>
       <el-form ref="form" status-icon :model="form" :rules="rules" label-width="100px">
         <el-form-item width="80%">
-          <strong>上级分类：{{ parentName }}</strong>
+          <strong>上级分类：{{ form.parentName }}</strong>
         </el-form-item>
         <el-form-item width="80%" label="分类名称" prop="name">
           <el-input v-model="form.name"/>
         </el-form-item>
-        <el-form-item label="描述">
+        <el-form-item label="描述" prop="description">
           <el-input
               v-model="form.description"
               type="textarea"
@@ -77,7 +87,7 @@
 </template>
 
 <script>
-import {listCategory,addCategory,updateCategory,delCategory,getCategory} from "@/api/category"
+import {listCategory, addCategory, updateCategory, delCategory, getCategory} from "@/api/category"
 
 export default {
   name: "Category",
@@ -105,11 +115,13 @@ export default {
         //visible: ''
       },
       form: {
-        name:'',
-        description:''
+        id: '',
+        parentId: '',
+        name: '',
+        description: '',
+        //父分类的名
+        parentName: '',
       },
-      //父分类的名
-      parentName: '',
       // 表单校验
       rules: {
         name: [
@@ -128,21 +140,21 @@ export default {
       })
     },
     add(row) {
+      this.resetForm();
       if (row != null && row.id) {
         this.form.parentId = row.id
-        this.parentName = row.name;
+        this.form.parentName = row.name;
       } else {
         this.form.parentId = -1
+        this.form.parentName = ''
       }
       this.open = true
       this.title = '添加菜单'
-      this.$nextTick(() => {
-        this.resetForm();
-      })
+
     },
     edit(row) {
       this.handleGet(row.id)
-      this.open=true;
+      this.open = true;
     },
     save() {
       this.$refs.form.validate((valid) => {
@@ -158,12 +170,12 @@ export default {
         }
       });
     },
-    handleGet(id){
-      getCategory(id).then(res=>{
-        this.form=res.data;
+    handleGet(id) {
+      getCategory(id).then(res => {
+        this.form = res.data;
       })
     },
-    handleAdd(){
+    handleAdd() {
       addCategory(this.form).then(res => {
         if (res.code === 200) {
           this.$message({
@@ -180,7 +192,7 @@ export default {
         }
       })
     },
-    handleEdit(){
+    handleEdit() {
       updateCategory(this.form).then(res => {
         if (res.code === 200) {
           this.$message({
@@ -224,8 +236,17 @@ export default {
         children: node.children
       }
     },
-    resetForm() {
-      this.$refs.form.resetFields();
+     resetForm() {
+      this.form = {
+        id: '',
+        parentId: '',
+        name: '',
+        description: '',
+        //父分类的名
+        parentName: '',
+      }
+      //用下面这个会导致form.id没清除
+      //this.$refs.form.resetFields();
     }
   },
   created() {

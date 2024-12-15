@@ -72,7 +72,7 @@
               :default-checked-keys="checkedKeys"
           />
         </el-form-item>
-        <el-form-item label="备注">
+        <el-form-item label="备注" prop="remark">
           <el-input
               v-model="form.remark"
               type="textarea"
