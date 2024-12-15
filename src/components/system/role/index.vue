@@ -1,39 +1,42 @@
 <template>
-<!--<span>角色管理</span>-->
+  <!--<span>角色管理</span>-->
   <div>
-  <div style="margin-bottom: 5px">
-    <el-input v-model="queryParams.roleName" placeholder="输入角色名" style="width: 150px" suffix-icon="el-icon-search"
-              @keyup.enter.native="getRoleList">
-    </el-input>
-    <el-button size="small" type="primary" style="margin-left: 5px" @click="getRoleList">查询</el-button>
-<!--    <el-button size="small" type="success" @click="resetParam">重置</el-button>-->
-    <el-button size="small" type="success" @click="add">新增</el-button>
+    <div style="margin-bottom: 5px">
+      <el-input v-model="queryParams.roleName" placeholder="输入角色名" style="width: 150px"
+                suffix-icon="el-icon-search"
+                @keyup.enter.native="getRoleList">
+      </el-input>
+      <el-button size="small" type="primary" style="margin-left: 5px" @click="getRoleList">查询</el-button>
+      <!--    <el-button size="small" type="success" @click="resetParam">重置</el-button>-->
+      <el-button size="small" type="success" @click="add">新增</el-button>
 
-  </div>
-  <el-table :data="tableData" :header-cell-style="{ backgroundColor: 'rgba(184,176,176,0.3)' }" border>
-    <el-table-column prop="id" label="ID" width="50">
-    </el-table-column>
-    <el-table-column prop="roleName" label="角色名" width="120">
-    </el-table-column>
-    <el-table-column prop="roleKey" label="权限标识符" width="120">
-    </el-table-column>
-    <el-table-column prop="createTime" label="创建时间" width="200">
-    </el-table-column>
-    <el-table-column prop="remark" label="备注" width="150">
-    </el-table-column>
-    <el-table-column prop="operate" label="操作">
-      <template slot-scope="scope">
-        <el-button size="small" icon="el-icon-edit" type="text" @click="edit(scope.row)">编辑</el-button>
-        <el-popconfirm title="确定删除吗？" @confirm="handleDelete(scope.row.id)" style="margin-left: 5px">
-          <el-button slot="reference" size="small" icon="el-icon-delete" type="text">删除</el-button>
-        </el-popconfirm>
-      </template>
-    </el-table-column>
-  </el-table>
-  <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="queryParams.pageNum"
-                 :page-sizes="[2, 5, 10, 20]" :page-size="queryParams.pageSize" layout="total, sizes, prev, pager, next, jumper"
-                 :total="total">
-  </el-pagination>
+    </div>
+    <el-table :data="tableData" :header-cell-style="{ backgroundColor: 'rgba(184,176,176,0.3)' }" border>
+      <el-table-column prop="id" label="ID" width="50">
+      </el-table-column>
+      <el-table-column prop="roleName" label="角色名" width="120">
+      </el-table-column>
+      <el-table-column prop="roleKey" label="权限标识符" width="120">
+      </el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="200">
+      </el-table-column>
+      <el-table-column prop="remark" label="备注" width="150">
+      </el-table-column>
+      <el-table-column prop="operate" label="操作">
+        <template slot-scope="scope">
+          <el-button size="small" icon="el-icon-edit" type="text" @click="edit(scope.row)">编辑</el-button>
+          <el-popconfirm title="确定删除吗？" @confirm="handleDelete(scope.row.id)" style="margin-left: 5px">
+            <el-button slot="reference" size="small" icon="el-icon-delete" type="text">删除</el-button>
+          </el-popconfirm>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                   :current-page="queryParams.pageNum"
+                   :page-sizes="[2, 5, 10, 20]" :page-size="queryParams.pageSize"
+                   layout="total, sizes, prev, pager, next, jumper"
+                   :total="total">
+    </el-pagination>
     <el-dialog title="提示" :visible.sync="open" width="30%" center>
       <el-form ref="form" status-icon :rules="rules" :model="form" label-width="120px">
         <el-form-item label="角色名" style="width: 80%" prop="roleName">
@@ -45,7 +48,7 @@
                 content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasRole('admin')`)"
                 placement="top"
             >
-              <i class="el-icon-question" />
+              <i class="el-icon-question"/>
             </el-tooltip>
             权限标识符
           </span>
@@ -55,11 +58,13 @@
           <el-checkbox
               v-model="menuExpand"
               @change="handleCheckedTreeExpand($event)"
-          >展开/折叠</el-checkbox>
+          >展开/折叠
+          </el-checkbox>
           <el-checkbox
               v-model="menuNodeAll"
               @change="handleCheckedTreeNodeAll($event)"
-          >全选/全不选</el-checkbox>
+          >全选/全不选
+          </el-checkbox>
           <el-tree
               ref="menu"
               class="tree-border"
@@ -89,27 +94,28 @@
 </template>
 
 <script>
-import {listRole,addRole,updateRole,getRole,delRole} from "@/api/role"
+import {listRole, addRole, updateRole, getRole, delRole} from "@/api/role"
 import {roleMenuTreeSelect} from "@/api/menu"
 import {treeselect} from "@/api/menu"
 import {delUser} from "@/api/user";
+
 export default {
   name: "Role",
   data() {
     return {
-      total:0,
-      open:false,
-      menuExpand:false,
+      total: 0,
+      open: false,
+      menuExpand: false,
       menuOptions: [],
       checkedKeys: [],
       menuNodeAll: false,
-      queryParams:{
+      queryParams: {
         pageNum: 1,
         pageSize: 10,
-        roleName:'',
+        roleName: '',
       },
-      tableData:[],
-      form:{
+      tableData: [],
+      form: {
         roleName: '',
         roleKey: '',
         roleSort: 0,
@@ -123,17 +129,17 @@ export default {
       // 表单校验
       rules: {
         roleName: [
-          { required: true, message: '角色名称不能为空', trigger: 'blur' }
+          {required: true, message: '角色名称不能为空', trigger: 'blur'}
         ],
         roleKey: [
-          { required: true, message: '权限字符不能为空', trigger: 'blur' }
+          {required: true, message: '权限字符不能为空', trigger: 'blur'}
         ],
       }
     }
   },
-  methods:{
-    getRoleList(){
-      listRole(this.queryParams).then(res=>{
+  methods: {
+    getRoleList() {
+      listRole(this.queryParams).then(res => {
         if (res.code === 200) {
           this.tableData = res.data.rows;
           this.total = parseInt(res.data.total);
@@ -145,7 +151,7 @@ export default {
     /** 查询菜单树结构 */
     getMenuTreeSelect() {
       treeselect().then((res) => {
-        console.log("菜单树",res)
+        console.log("菜单树", res)
         this.menuOptions = res.data;
         //将第一个节点设置默认选中状态
         this.checkedKeys.push(this.menuOptions[0].id)
@@ -167,14 +173,14 @@ export default {
         return res.data
       })
     },
-    add(){
-      this.open=true;
+    add() {
+      this.open = true;
       this.$nextTick(() => {
         this.resetForm();
       })
       this.getMenuTreeSelect()
     },
-    edit(row){
+    edit(row) {
       this.form.id = row.id;
       this.open = true;
       //通过roleId获取对应的菜单树
@@ -185,7 +191,7 @@ export default {
         this.open = true
         this.$nextTick(() => {
           roleMenu.then(res => {
-            console.log("________",res)
+            console.log("________", res)
             const checkedKeys = res.checkedKeys
             checkedKeys.forEach((v) => {
               this.$nextTick(() => {
@@ -196,9 +202,9 @@ export default {
         })
       })
     },
-    handleAdd(){
+    handleAdd() {
       this.form.menuIds = this.getMenuAllCheckedKeys()
-      addRole(this.form).then(res=>{
+      addRole(this.form).then(res => {
         if (res.code === 200) {
           this.$message({
             message: "新增角色成功",
@@ -214,9 +220,9 @@ export default {
         }
       })
     },
-    handleEdit(){
+    handleEdit() {
       this.form.menuIds = this.getMenuAllCheckedKeys()
-      updateRole(this.form).then(res=>{
+      updateRole(this.form).then(res => {
         if (res.code === 200) {
           this.$message({
             message: "修改角色成功",
@@ -232,7 +238,7 @@ export default {
         }
       })
     },
-    handleDelete(id){
+    handleDelete(id) {
       delRole(id).then(res => {
         if (res.code === 200) {
           this.$message({
@@ -248,7 +254,7 @@ export default {
         }
       })
     },
-    save(){
+    save() {
       this.$refs.form.validate((valid) => {
         if (valid) {
           if (this.form.id) {
@@ -291,7 +297,15 @@ export default {
       this.$refs.menu.setCheckedNodes(value ? this.menuOptions : [])
     },
     resetForm() {
-      this.$refs.form.resetFields();
+      this.form = {
+        id: '',
+        roleName: '',
+        roleKey: '',
+        roleSort: 0,
+        menuIds: [],
+        remark: ''
+      }
+      //this.$refs.form.resetFields();
     }
   },
   beforeMount() {
