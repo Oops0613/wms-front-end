@@ -80,7 +80,6 @@
         <el-form-item label="手机号" style="width: 80%" prop="phonenumber">
           <el-input v-model="form.phonenumber"></el-input>
         </el-form-item>
-
         <el-form-item label="角色" style="width: 80%" prop="roleId">
           <el-select v-model="form.roleId" clearable placeholder="请选择角色">
             <el-option
@@ -123,7 +122,7 @@ export default {
         realName: '',
         password: '',
         roleId: '',
-        sex: '',
+        sex: '0',
         email: '',
         phonenumber: '',
       },
@@ -307,7 +306,7 @@ export default {
         realName: '',
         password: '',
         roleId: '',
-        sex: '',
+        sex: '0',
         email: '',
         phonenumber: '',
       }

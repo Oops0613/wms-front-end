@@ -149,12 +149,13 @@ export default {
         this.form.parentName = ''
       }
       this.open = true
-      this.title = '添加菜单'
+      this.title = '添加分类'
 
     },
     edit(row) {
       this.handleGet(row.id)
       this.open = true;
+      this.title = '修改分类'
     },
     save() {
       this.$refs.form.validate((valid) => {
