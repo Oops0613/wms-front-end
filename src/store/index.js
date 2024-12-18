@@ -1,6 +1,6 @@
 import vue from 'vue'
 import Vuex from 'vuex'
-import router, {resetRouter} from "../router";
+import router, {resetRouter} from "@/router";
 import createPersistedState from 'vuex-persistedstate'
 
 vue.use(Vuex)
@@ -34,8 +34,6 @@ function dfs(menuList,container){
 
 function addNewRoute(menuList) {
     let routes = router.options.routes
-    console.log("menuList",menuList)
-    console.log("添加前", routes)
     routes.forEach(routeItem => {
         if (routeItem.path == "/Index") {
             //把后端返回的路由都平铺添加到/Index的children数组中
@@ -55,8 +53,6 @@ export default new Vuex.Store({
     mutations: {
         setMenu(state, menuList) {
             state.menu = menuList
-            // console.log(menuList)
-            // console.log(router.options.routes)
             addNewRoute(menuList)
         },
         clearRoute(state) {

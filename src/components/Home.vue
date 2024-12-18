@@ -140,7 +140,7 @@
 </template>
 
 <script>
-import DateBar from "../utils/DateBar";
+import DateBar from "./DateBar.vue";
 import {getInfo, updateUser, getUser, updatePassword} from "@/api/user";
 import {getRole} from "@/api/role"
 

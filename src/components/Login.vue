@@ -24,65 +24,56 @@
 
 
 <script>
-import {login,getRouters} from "@/api/user";
+import {login, getRouters} from "@/api/user";
+import {setToken} from "@/auth";
 
 export default {
   name: "Login",
-  data(){
-    return{
-      confirm_disabled:false,
-      loginForm:{
-        userName:'',
-        password:''
+  data() {
+    return {
+      confirm_disabled: false,
+      loginForm: {
+        userName: '',
+        password: ''
       },
-      rules:{
+      rules: {
         userName: [
-          { required: true, message: '请输入账号', trigger: 'blur' }
+          {required: true, message: '请输入账号', trigger: 'blur'}
         ],
         password: [
-          { required: true, message: '请输密码', trigger: 'blur' }
+          {required: true, message: '请输密码', trigger: 'blur'}
         ],
       }
     }
   },
-  methods:{
-
-    confirm(){
-      this.confirm_disabled=true;
+  methods: {
+    confirm() {
+      this.confirm_disabled = true;
       this.$refs.loginForm.validate((valid) => {
         if (valid) { //valid成功为true，失败为false
           //去后台验证用户名密码
-          login(this.loginForm).then(res=>{
+          login(this.loginForm).then(res => {
             console.log(res)
-            if(res.code==200){
-              //存储
-              //sessionStorage.setItem("CurUser",JSON.stringify(res.data.user))
-              console.log(res.data.user);
-              sessionStorage.setItem("token",res.data.token);
-                //setToken(res.token);
-              getRouters().then(res=>{
-                console.log("路由,",res.data.menus);
-                this.$store.commit("setMenu",res.data.menus);
-                this.$router.replace('/Index');
+            if (res.code == 200) {
+              //获取后端返回的token并存储
+              setToken(res.data.token);
+              //获取路由
+              getRouters().then(res => {
+                this.$store.commit("setMenu", res.data.menus);
+                this.$router.replace('/Home');
               })
-              //console.log(res.data.menu)
-
-              //跳转到主页
-              //this.$router.push('/Index');
-
-            }else{
-              this.confirm_disabled=false;
-              alert('校验失败，用户名或密码错误！');
+            } else {
+              this.confirm_disabled = false;
+              alert(res.msg);
               return false;
             }
           });
         } else {
-          this.confirm_disabled=false;
-          console.log('校验失败');
+          //前端校验未通过
+          this.confirm_disabled = false;
           return false;
         }
       });
-
     }
   }
 }
@@ -95,6 +86,7 @@ export default {
   height: 100%;
   background-color: #B3C0D1;
 }
+
 .loginDiv {
   position: absolute;
   top: 50%;
@@ -107,10 +99,12 @@ export default {
   border-radius: 5%;
 
 }
+
 .login-title {
   margin: 20px 0;
   text-align: center;
 }
+
 .login-content {
   width: 400px;
   height: 250px;

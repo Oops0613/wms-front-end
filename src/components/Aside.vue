@@ -34,8 +34,7 @@ export default {
   data() {
     return {
       // 当前激活的菜单项，通常来自 Vue Router 的路径
-      activeMenu: '/Home',
-      //isCollapse: false,
+      activeMenu: '/Home'
     };
   },
   computed:{
@@ -49,6 +48,7 @@ export default {
     isCollapse: Boolean,
   },
   created() {
+    this.activeMenu=sessionStorage.getItem("lastVisitedRoute")
     getRouters().then(res=>{
       console.log("aside刷新")
       this.$store.commit("setMenu",res.data.menus);

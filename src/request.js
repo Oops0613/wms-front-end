@@ -11,13 +11,14 @@ const request = axios.create({
 // 比如统一加token，对请求参数统一加密
 request.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=utf-8';
-    config.headers.token=sessionStorage.getItem("token");
-    // config.headers['token'] = user.token;  // 设置请求头
-    // 是否需要设置 token
-    // const isToken = (config.headers || {}).isToken === false
-    // if (getToken() && !isToken) {
-    //     config.headers['token'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
-    // }
+    //config.headers.token=sessionStorage.getItem("token");
+    // 是否需要设置 token(比如登录不需要)
+    //当且仅当needToken字段存在且为false时，不需要携带token
+    //(如果needToken字段不存在，即默认携带)
+    let needToken = config.headers.needToken!==false;
+    if (getToken() && needToken) {
+        config.headers.token = getToken() // 让每个请求携带自定义token
+    }
     return config
 }, error => {
     return Promise.reject(error)
@@ -27,7 +28,6 @@ request.interceptors.request.use(config => {
 // 可以在接口响应后统一处理结果
 request.interceptors.response.use(
     response => {
-        //console.log(response)
         let res = response.data;
         // 如果是返回的文件
         if (response.config.responseType === 'blob') {
@@ -44,7 +44,5 @@ request.interceptors.response.use(
         return Promise.reject(error)
     }
 )
-
-
 export default request
 
