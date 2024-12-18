@@ -19,7 +19,10 @@
       <el-button size="small" type="success" @click="add">新增</el-button>
 
     </div>
-    <el-table :data="tableData" :header-cell-style="{ backgroundColor: 'rgba(184,176,176,0.3)' }" border>
+    <el-table
+        :data="tableData"
+        :header-cell-style="{ backgroundColor: 'rgba(184,176,176,0.3)' }"
+        border>
       <el-table-column prop="id" label="ID" width="50">
       </el-table-column>
       <el-table-column prop="name" label="货物名" width="200">
@@ -41,10 +44,11 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="备注" width="200">
+      <el-table-column prop="remark" label="备注" width="200" :show-overflow-tooltip="true">
       </el-table-column>
       <el-table-column prop="operate" label="操作">
         <template slot-scope="scope">
+          <el-button size="small" icon="el-icon-view" type="text" @click="handleView(scope.row)">查看详情</el-button>
           <el-button size="small" icon="el-icon-edit" type="text" @click="edit(scope.row)">编辑</el-button>
           <el-popconfirm title="确定删除吗？" @confirm="handleDelete(scope.row.id)" style="margin-left: 5px">
             <el-button slot="reference" size="small" icon="el-icon-delete" type="text">删除</el-button>
@@ -65,6 +69,7 @@
         </el-form-item>
         <el-form-item label="所属分类" style="width: 80%" prop="categoryId">
           <el-cascader
+              v-model="form.categoryId"
               ref="categoryTree"
               :options="categoryTree"
               :props="{value:'id', label: 'name', children: 'children'}"
@@ -129,6 +134,28 @@
         <el-button type="primary" @click="save">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="货物详情" :visible.sync="detailed" width="50%" center>
+      <el-descriptions size="medium" border :column="3"
+                       :label-style="{ height: '40px', width: '12%'}"
+                       :contentStyle="{height:'40px',width:'200px'}">
+        <el-descriptions-item label="ID">{{goods.id}}</el-descriptions-item>
+        <el-descriptions-item label="货物名" span="2">{{goods.name}}</el-descriptions-item>
+        <el-descriptions-item label="所属分类名">{{goods.categoryName}}</el-descriptions-item>
+        <el-descriptions-item label="单位容积">{{goods.volumePerUnit+'（升/'+goods.unit+'）'}}</el-descriptions-item>
+        <el-descriptions-item label="占据空间">{{goods.amount*goods.volumePerUnit+'（升）'}}</el-descriptions-item>
+        <el-descriptions-item label="库存总数">{{goods.amount+'（'+goods.unit+'）'}}</el-descriptions-item>
+        <el-descriptions-item label="低库存阈值" :label-style="{color:'#ff004b'}">{{goods.lowThreshold+'（'+goods.unit+'）'}}</el-descriptions-item>
+        <el-descriptions-item label="高库存阈值" :label-style="{color:'#00aeff'}">{{goods.highThreshold+'（'+goods.unit+'）'}}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{goods.createTime}}</el-descriptions-item>
+        <el-descriptions-item label="修改时间">{{goods.updateTime}}</el-descriptions-item>
+        <el-descriptions-item label="过期时间">
+          <el-tag :type="goods.hasExpirationTime === '0' ? 'success' : 'danger'" disable-transitions>
+            {{ goods.hasExpirationTime === '0' ? '无' : '有' }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="备注">{{goods.remark}}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
   </div>
 </template>
 
@@ -161,6 +188,11 @@ export default {
       },
       total: 0,
       open: false,
+      detailed:false,
+      goods:{
+        amount:0,
+        volumePerUnit:0,
+      },
       form: {
         id: '',
         //货物名
@@ -207,6 +239,10 @@ export default {
     }
   },
   methods: {
+    handleView(row){
+      this.detailed=true;
+      this.goods=row;
+    },
     handleGet(id) {
       getGoods(id).then(res => {
         this.form = res.data;
