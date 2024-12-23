@@ -18,9 +18,7 @@
   </div>
 </template>
 <script>
-import request from "@/request";
 import {logout,getInfo} from "@/api/user";
-import {resetRouter} from "@/router";
 
 export default {
   name:"Header",
@@ -54,6 +52,8 @@ export default {
         logout().then(res=>{
           if(res.code==200){
             sessionStorage.clear();
+            //登出后清空vuex
+            this.$store.commit("resetMenu");
           }
           else {
             alert(res.msg);

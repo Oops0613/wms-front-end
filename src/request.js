@@ -11,7 +11,6 @@ const request = axios.create({
 // 比如统一加token，对请求参数统一加密
 request.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=utf-8';
-    //config.headers.token=sessionStorage.getItem("token");
     // 是否需要设置 token(比如登录不需要)
     //当且仅当needToken字段存在且为false时，不需要携带token
     //(如果needToken字段不存在，即默认携带)

@@ -4,6 +4,13 @@ import router, {resetRouter} from "@/router";
 import createPersistedState from 'vuex-persistedstate'
 
 vue.use(Vuex)
+
+/**
+ * 把menuList里符合条件的元素加入container
+ * @param menuList
+ * @param container
+ * @returns {*|*[]}
+ */
 function dfs(menuList,container){
     if(menuList===[]||menuList===null||menuList===undefined){
         return [];
@@ -39,7 +46,9 @@ function addNewRoute(menuList) {
             //把后端返回的路由都平铺添加到/Index的children数组中
             //尝试深度遍历menuList树，找出其中menuType === 'C'的menu
             let arr=[];
-            dfs(menuList,routeItem.children);
+            console.log("arr=",arr);
+            arr=dfs(menuList,routeItem.children);
+            console.log("arr=",arr);
         }
     })
     resetRouter()
@@ -54,6 +63,10 @@ export default new Vuex.Store({
         setMenu(state, menuList) {
             state.menu = menuList
             addNewRoute(menuList)
+        },
+        resetMenu(state) {
+            // 清空Vuex存放的菜单
+            state.menu = [];
         },
         clearRoute(state) {
             state.menu = [];

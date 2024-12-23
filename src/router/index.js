@@ -4,13 +4,12 @@ const routes = [
     {
         path: "/",
         name: "login",
-        component: () => import("../components/Login")
+        component: () => import("@/components/Login")
     },
     {
         path: "/Index",
-        //redirect:'/Home',
         name: "index",
-        component: () => import("../components/Index"),
+        component: () => import("@/components/Index"),
         children: [
             {
                 path: "/Home",
@@ -18,7 +17,7 @@ const routes = [
                 mata: {
                     title: "首页"
                 },
-                component: () => import("../components/Home"),
+                component: () => import("@/components/Home"),
             },
         ]
     }

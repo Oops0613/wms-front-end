@@ -138,7 +138,6 @@ export default {
   methods: {
     handleGet(id){
       getUser(id).then(res=>{
-        //console.log(res);
         this.form=res.data;
       })
     },
@@ -158,7 +157,6 @@ export default {
     },
     edit(row) {
       this.adding=false;
-      //console.log(row)
       this.handleGet(row.id);
       this.form.id = row.id;
       this.centerDialogVisible = true;
@@ -181,7 +179,6 @@ export default {
       })
     },
     handleDelete(id) {
-      //console.log(id)
       delUser(id).then(res => {
         if (res.code === 200) {
           this.$message({
@@ -225,8 +222,6 @@ export default {
 
     loadget() {
       listUser(this.queryParams).then(res => {
-        //console.log(res)
-        //console.log("msn", res.data)
         if (res.code === 200) {
           this.tableData = res.data.rows;
           this.total = parseInt(res.data.total);

@@ -53,14 +53,13 @@ export default {
         if (valid) { //valid成功为true，失败为false
           //去后台验证用户名密码
           login(this.loginForm).then(res => {
-            console.log(res)
             if (res.code == 200) {
               //获取后端返回的token并存储
               setToken(res.data.token);
               //获取路由
               getRouters().then(res => {
-                this.$store.commit("setMenu", res.data.menus);
-                this.$router.replace('/Home');
+                  this.$store.commit("setMenu", res.data.menus);
+                  this.$router.replace('/Home');
               })
             } else {
               this.confirm_disabled = false;

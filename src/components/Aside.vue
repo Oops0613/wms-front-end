@@ -1,4 +1,4 @@
-<template>
+ <template>
     <el-menu :default-active="activeMenu"
              mode="vertical"
              theme="dark"
@@ -51,6 +51,7 @@ export default {
     this.activeMenu=sessionStorage.getItem("lastVisitedRoute")
     getRouters().then(res=>{
       console.log("aside刷新")
+      //侧边栏在权限修改后能及时更新
       this.$store.commit("setMenu",res.data.menus);
     })
   }

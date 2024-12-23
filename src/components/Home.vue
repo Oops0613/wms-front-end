@@ -230,16 +230,13 @@ export default {
   methods: {
     init() {
       getInfo().then(res => {
-        console.log("个人中心获取用户信息", res);
         if (res.code == 200) {
           this.user = res.data.user;
-          console.log("个人中心获取用户信息后", this.user);
           this.refresh(this.user.id);
         }
       })
       const curTime = new Date();
       const curHour = curTime.getHours();
-      console.log("curHour", curHour)
       if (curHour < 12) {
         this.greeting = "早上好！"
       } else if (curHour < 18) {
@@ -268,7 +265,9 @@ export default {
     },
     editPwd() {
       this.pwdChange = true;
-      this.resetForm('pwdForm')
+      this.$nextTick(()=>{
+        this.resetForm('pwdForm')
+      })
     },
     save() {
       this.$refs.form.validate((valid) => {

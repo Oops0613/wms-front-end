@@ -10,7 +10,6 @@
       </el-header>
 
       <el-main style="height: 100%">
-<!--        <Main></Main>-->
         <router-view/>
       </el-main>
     </el-container>
@@ -50,9 +49,8 @@ export default {
       this.isCollapse=!this.isCollapse;
       this.sideWidth=this.isCollapse?64:200;
       this.icon=this.isCollapse?"el-icon-s-unfold":"el-icon-s-fold"
-    }
+    },
   },
-
 };
 </script>
 <style scoped>
