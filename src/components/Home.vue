@@ -1,5 +1,9 @@
 <template>
   <div style="text-align: center;background-color: #f1f1f3;height: 100%;padding: 0px;margin: 0px;">
+    <div class="notice">
+      <i class="el-icon-bell"><strong>最新公告：</strong></i>
+    <notice-bar style="width: 92%" :cycle="10" />
+    </div>
     <h2 style="font-size: 50px;">{{ greeting + user.realName }}</h2>
     <div v-show="isEdit">
       <el-form ref="form" style="width: 100%" :rules="rules" :model="form" label-width="15px">
@@ -141,12 +145,13 @@
 
 <script>
 import DateBar from "./DateBar.vue";
+import NoticeBar from "@/components/NoticeBar.vue";
 import {getInfo, updateUser, getUser, updatePassword} from "@/api/user";
 import {getRole} from "@/api/role"
 
 export default {
   name: "Home",
-  components: {DateBar},
+  components: {DateBar,NoticeBar},
   data() {
     const validatePwd1 = (rule, value, callback) => {
       if (value === '') {
@@ -228,6 +233,9 @@ export default {
   },
   computed: {},
   methods: {
+    openTip(){
+
+    },
     init() {
       getInfo().then(res => {
         if (res.code == 200) {
@@ -347,5 +355,11 @@ export default {
   margin-top: 20px;
   margin-left: 20px;
   justify-content:center;
+}
+
+.notice{
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: flex-start; /* 默认水平排列 */
 }
 </style>
