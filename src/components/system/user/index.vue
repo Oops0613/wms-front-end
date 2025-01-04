@@ -178,7 +178,6 @@ export default {
       });
     },
     edit(row) {
-      this.adding = false;
       this.handleGet(row.id);
       this.form.id = row.id;
       this.open = true;
@@ -233,7 +232,6 @@ export default {
       })
     },
     add() {
-      this.adding = true;
       this.open = true;
       this.$nextTick(() => {
         //this.form.password='';

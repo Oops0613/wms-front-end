@@ -9,7 +9,6 @@
       <!--    <el-button size="small" type="success" @click="resetParam">重置</el-button>-->
       <el-button size="small" type="success" @click="add">新增</el-button>
     </div>
-    <!--    <hr align=center width=100% color=#A9A9A9 SIZE=1/>-->
     <el-table
         stripe
         size="medium"
@@ -20,19 +19,15 @@
         :default-expand-all="isExpandAll"
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
+<!--      <el-table-column prop="id" label="ID" width="100"/>-->
       <el-table-column prop="name" label="分类名称" :show-overflow-tooltip="true" width="200"/>
-      <!--      <el-table-column prop="icon" label="图标" align="center" width="100">-->
-      <!--      <template slot-scope="scope">-->
-      <!--        <svg-icon :icon-class="scope.row.icon" />-->
-      <!--      </template>-->
-      <!--      </el-table-column>-->
-      <el-table-column prop="description" label="描述" width="200px" :show-overflow-tooltip="true"/>
-      <el-table-column label="创建时间" align="left" prop="createTime">
+      <el-table-column prop="description" label="描述" width="250" :show-overflow-tooltip="true"/>
+      <el-table-column label="创建时间" align="left" prop="createTime" width="250">
         <template slot-scope="scope">
           <span>{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="修改时间" align="left" prop="updateTime">
+      <el-table-column label="修改时间" align="left" prop="updateTime" width="250">
         <template slot-scope="scope">
           <span>{{ scope.row.updateTime }}</span>
         </template>
@@ -64,9 +59,19 @@
     </el-table>
     <el-dialog :title="title" :visible.sync="open" width="30%" center>
       <el-form ref="form" status-icon :model="form" :rules="rules" label-width="100px">
-        <el-form-item width="80%">
+        <el-form-item width="80%" v-if="form.parentName">
           <strong>上级分类：{{ form.parentName }}</strong>
         </el-form-item>
+        <el-form-item label="上级分类" width="80%" prop="parentId" v-if="form.parentId!='-1'&&!adding">
+        <el-select v-model="form.parentId" clearable placeholder="请选择角色">
+          <el-option
+              v-for="item in topCategoryList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
         <el-form-item width="80%" label="分类名称" prop="name">
           <el-input v-model="form.name"/>
         </el-form-item>
@@ -93,12 +98,16 @@ export default {
   name: "Category",
   data() {
     return {
+      //在新增中
+      adding:false,
       // 重新渲染表格状态
       refreshTable: true,
       // 遮罩层
       loading: true,
       // 显示搜索条件
       showSearch: true,
+      // 一级分类表
+      topCategoryList:[],
       // 分类表格树数据
       categoryList: [],
       // 分类树选项
@@ -112,7 +121,6 @@ export default {
       // 查询参数
       queryParams: {
         name: '',
-        //visible: ''
       },
       form: {
         id: '',
@@ -126,6 +134,9 @@ export default {
       rules: {
         name: [
           {required: true, message: '分类名称不能为空', trigger: 'blur'}
+        ],
+        parentId: [
+          {required: true, message: "请选择上级分类", trigger: 'change'},
         ]
       }
     }
@@ -140,6 +151,7 @@ export default {
       })
     },
     add(row) {
+      this.adding=true;
       this.resetForm();
       if (row != null && row.id) {
         this.form.parentId = row.id
@@ -150,12 +162,18 @@ export default {
       }
       this.open = true
       this.title = '添加分类'
-
     },
     edit(row) {
-      this.handleGet(row.id)
-      this.open = true;
-      this.title = '修改分类'
+      this.adding=false;
+      //this.handleGet(row)
+      listCategory({parentId:-1}).then(res=>{
+        this.topCategoryList=res.data
+      })
+      getCategory(row.id).then(res => {
+        this.form = res.data;
+        this.open = true;
+        this.title = '修改分类'
+      })
     },
     save() {
       this.$refs.form.validate((valid) => {
@@ -170,11 +188,6 @@ export default {
           return false;
         }
       });
-    },
-    handleGet(id) {
-      getCategory(id).then(res => {
-        this.form = res.data;
-      })
     },
     handleAdd() {
       addCategory(this.form).then(res => {
@@ -251,7 +264,6 @@ export default {
     }
   },
   created() {
-    console.log('created')
     this.getList();
   }
 }
