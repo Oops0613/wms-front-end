@@ -19,9 +19,9 @@
       </el-table-column>
       <el-table-column prop="name" label="仓库名" width="200">
       </el-table-column>
-      <el-table-column prop="capacity" label="仓库容量（升）" width="110">
+      <el-table-column prop="capacity" label="仓库容量（升）" width="130" sortable>
       </el-table-column>
-      <el-table-column prop="remainingCapacity" label="剩余容量（升）" width="110">
+      <el-table-column prop="remainingCapacity" label="剩余容量（升）" width="130" sortable>
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="150">
       </el-table-column>
@@ -146,7 +146,7 @@ export default {
           this.getList();
         } else {
           this.$message({
-            message: "修改仓库失败",
+            message: res.msg,
             type: "error"
           })
         }
@@ -169,6 +169,7 @@ export default {
       })
     },
     add() {
+      this.using=false;
       this.open = true;
       this.$nextTick(() => {
         this.resetForm();
