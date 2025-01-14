@@ -7,7 +7,14 @@ export function listGoods(query){
         params:query
     })
 }
-
+//查询所有货物
+export function listAllGoods(query){
+    return request({
+        url:'/goods/listAll',
+        method:'get',
+        params:query
+    })
+}
 // 查询分类详细
 export function getGoods(id) {
     return request({

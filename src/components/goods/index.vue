@@ -242,7 +242,7 @@ export default {
         ],
         pricePerUnit: [
           {required: true, message: "请输入每单位价格", trigger: 'blur'},
-          {pattern: /^(?!0(\.0+)?$)\d+(\.\d+)?$/, message: "请输入正数", trigger: 'blur'}
+          {pattern: /^\d+(\.\d{1,2})?$/, message: "请输入正数，最多2位小数", trigger: 'blur'}
         ],
         volumePerUnit: [
           {required: true, message: "请输入每单位所占容积", trigger: 'blur'},
@@ -423,7 +423,6 @@ export default {
         console.log("选中",nodesInfo)
         this.queryParams.categoryId=nodesInfo.value;
       }
-
     },
     handleFormChange(){
       //选中分类时，给表单对应项赋值

@@ -7,6 +7,12 @@ export function listWarehouse(query){
         params:query
     })
 }
+export function listAllWarehouse(){
+    return request({
+        url:'/warehouse/listAll',
+        method:'get',
+    })
+}
 
 // 查询分类详细
 export function getWarehouse(id) {
