@@ -49,7 +49,7 @@
       <el-table-column prop="expirationTime" label="过期时间" width="150" sortable>
         <template slot-scope="scope" v-if="scope.row.hasExpirationTime==='1'">{{ scope.row.expirationTime }}</template>
       </el-table-column>
-      <el-table-column prop="approveStatus" label="审批状态" width="80">
+      <el-table-column prop="approveStatus" label="审批状态" width="100">
         <template slot-scope="scope">
           <el-tag :type=statusList[scope.row.approveStatus].type disable-transitions>
             {{ statusList[scope.row.approveStatus].label }}
@@ -119,18 +119,27 @@
                        :label-style="{ height: '40px', width: '12%'}"
                        :contentStyle="{height:'40px',width:'200px'}">
         <el-descriptions-item label="ID">{{record.id}}</el-descriptions-item>
-        <el-descriptions-item label="货物名" span="1">{{record.name}}</el-descriptions-item>
+        <el-descriptions-item label="货物名" span="1">{{record.goodsName}}</el-descriptions-item>
         <el-descriptions-item label="所属分类名">{{record.categoryName}}</el-descriptions-item>
-        <el-descriptions-item label="目的仓库名" span="1">{{record.name}}</el-descriptions-item>
+        <el-descriptions-item label="目的仓库名" span="1">{{record.toName}}</el-descriptions-item>
         <el-descriptions-item label="申请数量">{{record.amount}}</el-descriptions-item>
-        <el-descriptions-item label="占据空间">{{record.amount*record.volumePerUnit+'（升）'}}</el-descriptions-item>
-        <el-descriptions-item label="申请时间">{{record.createTime}}</el-descriptions-item>
-        <el-descriptions-item label="申请人">{{record.createTime}}</el-descriptions-item>
+        <el-descriptions-item label="占据空间">{{record.volume+'（升）'}}</el-descriptions-item>
+        <el-descriptions-item label="申请人">{{record.applyUserName}}</el-descriptions-item>
+        <el-descriptions-item label="申请时间">{{record.applyTime}}</el-descriptions-item>
         <el-descriptions-item label="申请备注">{{record.applyRemark}}</el-descriptions-item>
-        <el-descriptions-item label="审批时间">{{record.createTime}}</el-descriptions-item>
-        <el-descriptions-item label="审批人">{{record.createTime}}</el-descriptions-item>
+        <el-descriptions-item label="审批人">{{record.approveUserName}}</el-descriptions-item>
+        <el-descriptions-item label="审批时间">{{record.approveTime}}</el-descriptions-item>
         <el-descriptions-item label="审批备注">{{record.approveRemark}}</el-descriptions-item>
-        <el-descriptions-item label="货物过期时间"></el-descriptions-item>
+        <el-descriptions-item label="审批状态">
+          <template>
+            <el-tag :type=statusList[record.approveStatus].type disable-transitions>
+              {{ statusList[record.approveStatus].label }}
+            </el-tag>
+          </template>
+        </el-descriptions-item>
+        <el-descriptions-item label="货物过期时间" :content-style="{color:'#ff004b'}">
+          <template v-if="record.hasExpirationTime==='1'">{{ record.expirationTime }}</template>
+        </el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
@@ -139,7 +148,7 @@
 <script>
 import {listAllWarehouse} from "@/api/warehouse";
 import {listCategory} from "@/api/category";
-import {listInApply} from "@/api/record";
+import {listInApply,getRecord} from "@/api/record";
 import {listAllGoods} from "@/api/goods";
 
 export default {
@@ -158,7 +167,11 @@ export default {
         {type: 'warning', label: '无法审批'}
       ],
       //单条出入库记录
-      record:{},
+      record:{
+        fromName:'',
+        toName:'',
+        approveStatus:0,
+      },
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -196,13 +209,10 @@ export default {
   },
   methods: {
     handleView(row){
-      this.detailed=true;
-      this.record=row;
-    },
-    handleGet(id) {
-      getWarehouse(id).then(res => {
-        this.form = res.data;
+      getRecord(row.id).then(res=>{
+        this.record=res.data;
       })
+      this.detailed=true;
     },
     save() {
       this.$refs.form.validate((valid) => {
@@ -289,7 +299,6 @@ export default {
         this.categoryTree = this.handleTree(res.data, 'id')
       })
       listInApply(this.queryParams).then(res => {
-        console.log(res)
         if (res.code === 200) {
           this.tableData = res.data.rows;
           this.total = parseInt(res.data.total);
@@ -339,7 +348,6 @@ export default {
       } else {
         //选中分类时，给查询参数对应项赋值
         let nodesInfo = this.$refs["categoryTree"].getCheckedNodes()[0];
-        console.log("选中", nodesInfo)
         this.queryParams.categoryId = nodesInfo.value;
       }
     },

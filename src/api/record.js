@@ -28,3 +28,9 @@ export function listAllotApply(query){
         params:query
     })
 }
+export function getRecord(id) {
+    return request({
+        url: '/record/' + id,
+        method: 'get'
+    })
+}
