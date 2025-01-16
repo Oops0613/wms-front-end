@@ -80,10 +80,21 @@
                 v-for="item in goodsList"
                 :key="item.id"
                 :label="item.name"
-                :value="item.id">
+                :value="item.id"
+                @click.native="handleGoodsChange(item.id)">
             </el-option>
           </el-select>
         </el-form-item>
+        <div v-if="expire">
+          <el-form-item label="货物过期时间" prop="expirationTime">
+            <el-date-picker
+                v-model="form.expirationTime"
+                type="datetime"
+                placeholder="选择日期时间"
+                :picker-options="pickerOptions">
+            </el-date-picker>
+          </el-form-item>
+        </div>
         <el-form-item label="目的仓库" style="width: 80%" prop="toId">
           <el-select
               v-model="form.toId"
@@ -118,18 +129,18 @@
       <el-descriptions size="medium" border :column="3"
                        :label-style="{ height: '40px', width: '12%'}"
                        :contentStyle="{height:'40px',width:'200px'}">
-        <el-descriptions-item label="ID">{{record.id}}</el-descriptions-item>
-        <el-descriptions-item label="货物名" span="1">{{record.goodsName}}</el-descriptions-item>
-        <el-descriptions-item label="所属分类名">{{record.categoryName}}</el-descriptions-item>
-        <el-descriptions-item label="目的仓库名" span="1">{{record.toName}}</el-descriptions-item>
-        <el-descriptions-item label="申请数量">{{record.amount}}</el-descriptions-item>
-        <el-descriptions-item label="占据空间">{{record.volume+'（升）'}}</el-descriptions-item>
-        <el-descriptions-item label="申请人">{{record.applyUserName}}</el-descriptions-item>
-        <el-descriptions-item label="申请时间">{{record.applyTime}}</el-descriptions-item>
-        <el-descriptions-item label="申请备注">{{record.applyRemark}}</el-descriptions-item>
-        <el-descriptions-item label="审批人">{{record.approveUserName}}</el-descriptions-item>
-        <el-descriptions-item label="审批时间">{{record.approveTime}}</el-descriptions-item>
-        <el-descriptions-item label="审批备注">{{record.approveRemark}}</el-descriptions-item>
+        <el-descriptions-item label="ID">{{ record.id }}</el-descriptions-item>
+        <el-descriptions-item label="货物名" span="1">{{ record.goodsName }}</el-descriptions-item>
+        <el-descriptions-item label="所属分类名">{{ record.categoryName }}</el-descriptions-item>
+        <el-descriptions-item label="目的仓库名" span="1">{{ record.toName }}</el-descriptions-item>
+        <el-descriptions-item label="申请数量">{{ record.amount }}</el-descriptions-item>
+        <el-descriptions-item label="占据空间">{{ record.volume + '（升）' }}</el-descriptions-item>
+        <el-descriptions-item label="申请人">{{ record.applyUserName }}</el-descriptions-item>
+        <el-descriptions-item label="申请时间">{{ record.applyTime }}</el-descriptions-item>
+        <el-descriptions-item label="申请备注">{{ record.applyRemark }}</el-descriptions-item>
+        <el-descriptions-item label="审批人">{{ record.approveUserName }}</el-descriptions-item>
+        <el-descriptions-item label="审批时间">{{ record.approveTime }}</el-descriptions-item>
+        <el-descriptions-item label="审批备注">{{ record.approveRemark }}</el-descriptions-item>
         <el-descriptions-item label="审批状态">
           <template>
             <el-tag :type=statusList[record.approveStatus].type disable-transitions>
@@ -148,8 +159,8 @@
 <script>
 import {listAllWarehouse} from "@/api/warehouse";
 import {listCategory} from "@/api/category";
-import {listInApply,getRecord} from "@/api/record";
-import {listAllGoods} from "@/api/goods";
+import {listInApply, getRecord,addInApply} from "@/api/record";
+import {getGoods, listAllGoods} from "@/api/goods";
 
 export default {
   name: "InApply",
@@ -158,7 +169,7 @@ export default {
       tableData: [],
       categoryTree: [],
       warehouseList: [],
-      goodsList:[],
+      goodsList: [],
       //不同审批状态
       statusList: [
         {type: 'info', label: '未审批'},
@@ -167,10 +178,10 @@ export default {
         {type: 'warning', label: '无法审批'}
       ],
       //单条出入库记录
-      record:{
-        fromName:'',
-        toName:'',
-        approveStatus:0,
+      record: {
+        fromName: '',
+        toName: '',
+        approveStatus: 0,
       },
       queryParams: {
         pageNum: 1,
@@ -182,7 +193,8 @@ export default {
       },
       total: 0,
       open: false,
-      detailed:false,
+      detailed: false,
+      expire: false,
       form: {
         //目的仓库
         toId: '',
@@ -192,6 +204,8 @@ export default {
         amount: 0,
         //申请备注
         applyRemark: '',
+        //过期日期
+        expirationTime: '',
       },
       rules: {
         goodsId: [
@@ -200,19 +214,28 @@ export default {
         toId: [
           {required: true, message: "请选择目的仓库", trigger: 'change'},
         ],
+        expirationTime: [
+          {required: true, message: "请选择货物过期时间", trigger: 'change'},
+        ],
         amount: [
           {required: true, message: "请输入申请数量", trigger: 'blur'},
           {pattern: /^[1-9]\d*$/, message: "请输入正整数", trigger: 'blur'}
         ],
       },
+      pickerOptions:{
+        // 禁用过去的日期
+        disabledDate(time) {
+          return time.getTime() < Date.now();  // 如果时间小于当前时间，则禁用
+        }
+      }
     }
   },
   methods: {
-    handleView(row){
-      getRecord(row.id).then(res=>{
-        this.record=res.data;
+    handleView(row) {
+      getRecord(row.id).then(res => {
+        this.record = res.data;
       })
-      this.detailed=true;
+      this.detailed = true;
     },
     save() {
       this.$refs.form.validate((valid) => {
@@ -268,17 +291,17 @@ export default {
       })
     },
     handleAdd() {
-      addWarehouse(this.form).then(res => {
+      addInApply(this.form).then(res => {
         if (res.code === 200) {
           this.$message({
-            message: "新增仓库成功",
+            message: "新增入库申请成功",
             type: "success"
           })
           this.open = false;
           this.getList();
         } else {
           this.$message({
-            message: "新增仓库失败",
+            message: "新增入库申请失败",
             type: "error"
           })
         }
@@ -334,6 +357,8 @@ export default {
         amount: 0,
         //申请备注
         applyRemark: '',
+        //过期日期
+        expirationTime: '',
       }
       //this.$refs.form.resetFields();
     },
@@ -350,6 +375,13 @@ export default {
         let nodesInfo = this.$refs["categoryTree"].getCheckedNodes()[0];
         this.queryParams.categoryId = nodesInfo.value;
       }
+    },
+    handleGoodsChange(goodsId) {
+      //如果申请入库的货物有过期时间，则在表单上展示日期选择框
+      getGoods(goodsId).then(res => {
+        this.expire = res.data.hasExpirationTime === '1';
+        this.form.expirationTime='';
+      })
     },
   },
   beforeMount() {

@@ -193,7 +193,9 @@ export default {
       using:false,
       tableData: [],
       categoryList:[],
+      //填写表单时使用
       categoryTree:[],
+      //筛选条件使用
       categoryTree2:[],
       queryParams: {
         pageNum: 1,
@@ -357,13 +359,8 @@ export default {
         console.log("分类树，",this.categoryList)
       })
       listGoods(this.queryParams).then(res => {
-        console.log(res)
         if (res.code === 200) {
           this.tableData = res.data.rows;
-          //给列表每行添加分类名
-          this.tableData.forEach(row => {
-            row.categoryName = this.getCategoryNameById(row.categoryId)
-          })
           this.total = parseInt(res.data.total);
         } else {
           alert("获取失败");
@@ -399,14 +396,6 @@ export default {
         remark:'',
       }
       //this.$refs.form.resetFields();
-    },
-    getCategoryNameById(id) {
-      for (let c of this.categoryList) {
-        if (c.id === id) {
-          return c.name;
-        }
-      }
-      return "";
     },
     handleSearchChange(){
       let cid=this.queryParams.categoryId

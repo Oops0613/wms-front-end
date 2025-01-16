@@ -34,3 +34,11 @@ export function getRecord(id) {
         method: 'get'
     })
 }
+// 新增入库申请
+export function addInApply(data) {
+    return request({
+        url: '/record/addInApply',
+        method: 'post',
+        data: data
+    })
+}
