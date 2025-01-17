@@ -189,7 +189,6 @@ export default {
         toId: null,
         categoryId: null,
         goodsName: '',
-        type: 1,
       },
       total: 0,
       open: false,
@@ -344,7 +343,6 @@ export default {
     resetParam() {
       this.queryParams.toId = null;
       this.queryParams.categoryId = null;
-      this.queryParams.type = 1;
       this.queryParams.goodsName = '';
     },
     resetForm() {

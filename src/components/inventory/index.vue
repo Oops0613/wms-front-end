@@ -59,12 +59,15 @@
       <el-table-column prop="enterTime" label="入库时间" width="150" sortable>
       </el-table-column>
       <el-table-column prop="expirationTime" label="过期时间" width="150" sortable>
-        <template slot-scope="scope" v-if="scope.row.hasExpirationTime==='1'">{{scope.row.expirationTime}}</template>
+        <template slot-scope="scope" v-if="scope.row.hasExpirationTime==='1'">{{ scope.row.expirationTime }}</template>
       </el-table-column>
       <el-table-column prop="operate" label="操作">
         <template slot-scope="scope">
-          <el-button v-if="outApply" size="small" icon="el-icon-remove-outline" type="text" @click="handleOut(scope.row)">出库</el-button>
-          <el-button v-if="allot" size="small" icon="el-icon-refresh" type="text" @click="handleAllot(scope.row)">调拨</el-button>
+          <el-button v-if="outApply" size="small" icon="el-icon-remove-outline" type="text"
+                     @click="add(scope.row,false)">出库
+          </el-button>
+          <el-button v-if="allot" size="small" icon="el-icon-refresh" type="text" @click="add(scope.row,true)">调拨
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -76,25 +79,25 @@
     </el-pagination>
     <el-dialog title="新增申请" :visible.sync="open" width="30%" center>
       <el-form ref="form" status-icon :rules="rules" :model="form" label-width="140px" center>
-        <div v-show="isAllot">
-        <el-form-item label="目的仓库" style="width: 80%" prop="toId">
-          <el-select
-              v-model="form.toId"
-              clearable
-              filterable
-              placeholder="请选择仓库">
-            <el-option
-                v-for="item in warehouseList"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        </div>
-          <el-form-item label="申请数量" style="width: 80%" prop="amount">
-            <el-input v-model="form.amount"></el-input>
+        <div v-if="isAllot">
+          <el-form-item label="目的仓库" style="width: 80%" prop="toId">
+            <el-select
+                v-model="form.toId"
+                clearable
+                filterable
+                placeholder="请选择仓库">
+              <el-option
+                  v-for="item in warehouseList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
+        </div>
+        <el-form-item label="申请数量" style="width: 80%" prop="amount">
+          <el-input v-model="form.amount"></el-input>
+        </el-form-item>
         <el-form-item label="备注" prop="applyRemark" style="width: 80%">
           <el-input
               v-model="form.applyRemark"
@@ -115,49 +118,63 @@
 import {listInventory} from "@/api/inventory";
 import router from "@/router";
 import {listCategory} from "@/api/category";
-import {listAllWarehouse, listWarehouse} from "@/api/warehouse";
+import {listAllWarehouse} from "@/api/warehouse";
+import {addOutApply, addAllotApply} from "@/api/record"
 
 export default {
   name: "Inventory",
   data() {
+    //调拨申请时校验目的仓库
+    const validateToId = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请选择目的仓库'));
+      } else if (value === this.form.fromId) {
+        callback(new Error('目的仓库和源仓库不能相同！'));
+      } else {
+        callback();
+      }
+    };
     return {
       //出库申请权限
-      outApply:false,
+      outApply: false,
       //调拨申请权限
-      allot:false,
+      allot: false,
       //正在新增调拨申请
-      isAllot:false,
+      isAllot: false,
       tableData: [],
-      categoryTree:[],
-      warehouseList:[],
+      categoryTree: [],
+      warehouseList: [],
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        warehouseId:null,
-        categoryId:null,
+        warehouseId: null,
+        categoryId: null,
         goodsName: '',
-        ignoreZero:'',
+        ignoreZero: '',
       },
       total: 0,
       open: false,
-      using:false,
+      using: false,
       form: {
         //库存ID
         inventoryId: '',
+        //货物ID
+        goodsId: '',
         //源仓库
-        fromId:'',
+        fromId: '',
         //目的仓库
-        toId:'',
+        toId: '',
         //数量
-        amount:0,
+        amount: 0,
         //申请备注
-        applyRemark:'',
-        hasExpirationTime:'',
-        expirationTime:'',
+        applyRemark: '',
+        hasExpirationTime: '',
+        expirationTime: '',
       },
       rules: {
         toId: [
           {required: true, message: "请选择目的仓库", trigger: 'change'},
+          {validator: validateToId, trigger: 'change'},
         ],
         amount: [
           {required: true, message: "请输入申请数量", trigger: 'blur'},
@@ -167,18 +184,13 @@ export default {
     }
   },
   methods: {
-    handleGet(id) {
-      getWarehouse(id).then(res => {
-        this.form = res.data;
-      })
-    },
     save() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          if (this.form.id) {
-            this.handleEdit();
+          if (this.isAllot) {
+            this.handleAllot();
           } else {
-            this.handleAdd();
+            this.handleOut();
           }
         } else {
           console.log('error submit!!');
@@ -186,38 +198,15 @@ export default {
         }
       });
     },
-    handleOut(row) {
-      this.isAllot=false;
-      this.form.inventoryId = row.id;
-      this.form.fromId=row.warehouseId;
-      this.toId=-1;
-      this.form.hasExpirationTime=row.hasExpirationTime;
-      this.form.expirationTime=row.expirationTime;
-      this.open = true;
-      this.$nextTick(() => {
-        this.resetForm();
-      })
-    },
-    handleAllot(row) {
-      this.isAllot=true;
-      this.form.inventoryId = row.id;
-      this.form.fromId=row.warehouseId;
-      this.form.hasExpirationTime=row.hasExpirationTime;
-      this.form.expirationTime=row.expirationTime;
-      this.open = true;
-      this.$nextTick(() => {
-        this.resetForm();
-      })
-    },
-    handleEdit() {
-      updateWarehouse(this.form).then(res => {
+    handleOut() {
+      addOutApply(this.form).then(res => {
         if (res.code === 200) {
           this.$message({
-            message: "修改仓库成功",
+            message: "新增出库申请成功",
             type: "success"
           })
           this.open = false;
-          this.getList();
+          this.$router.push('/out-apply');
         } else {
           this.$message({
             message: res.msg,
@@ -226,14 +215,15 @@ export default {
         }
       })
     },
-    handleDelete(id) {
-      delWarehouse(id).then(res => {
+    handleAllot() {
+      addAllotApply(this.form).then(res => {
         if (res.code === 200) {
           this.$message({
-            message: "删除仓库成功",
+            message: "新增调拨申请成功",
             type: "success"
           })
-          this.getList();
+          this.open = false;
+          this.$router.push('/allot');
         } else {
           this.$message({
             message: res.msg,
@@ -242,40 +232,28 @@ export default {
         }
       })
     },
-    add() {
-      this.using=false;
+    add(row, isAllot) {
+      this.resetForm();
+      this.isAllot = isAllot;
+      if(!isAllot){
+        this.form.toId=-1;
+      }
+      this.form.inventoryId = row.id;
+      this.form.goodsId = row.goodsId;
+      this.form.fromId = row.warehouseId;
+      this.form.hasExpirationTime = row.hasExpirationTime;
+      this.form.expirationTime = row.expirationTime;
       this.open = true;
-      this.$nextTick(() => {
-        this.resetForm();
-      })
     },
-    handleAdd() {
-      addWarehouse(this.form).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: "新增仓库成功",
-            type: "success"
-          })
-          this.open = false;
-          this.getList();
-        } else {
-          this.$message({
-            message: "新增仓库失败",
-            type: "error"
-          })
-        }
-      })
-    },
-
     getList() {
       //加载已有的仓库列表
-      listAllWarehouse().then(res=>{
-        this.warehouseList=res.data;
-        console.log("仓库表",this.warehouseList)
+      listAllWarehouse().then(res => {
+        this.warehouseList = res.data;
+        console.log("仓库表", this.warehouseList)
       })
       //加载已有的分类列表
       listCategory().then(res => {
-        console.log("分类表",res.data)
+        console.log("分类表", res.data)
         this.categoryTree = this.handleTree(res.data, 'id')
       })
       listInventory(this.queryParams).then(res => {
@@ -300,53 +278,54 @@ export default {
       this.getList();
     },
     resetParam() {
-      this.queryParams.warehouseId=null;
-      this.queryParams.categoryId=null;
-      this.queryParams.ignoreZero='';
+      this.queryParams.warehouseId = null;
+      this.queryParams.categoryId = null;
+      this.queryParams.ignoreZero = '';
       this.queryParams.goodsName = '';
     },
     resetForm() {
       this.form = {
         //库存ID
         inventoryId: '',
+        //货物ID
+        goodsId: '',
         //源仓库
-        fromId:'',
+        fromId: '',
         //目的仓库
-        toId:'',
+        toId: '',
         //数量
-        amount:0,
+        amount: 0,
         //申请备注
-        applyRemark:'',
-        hasExpirationTime:'',
-        expirationTime:'',
+        applyRemark: '',
+        hasExpirationTime: '',
+        expirationTime: '',
       }
       //this.$refs.form.resetFields();
     },
-    handleSearchChange(){
-      let cid=this.queryParams.categoryId
-      if(cid&&cid.length===0){
+    handleSearchChange() {
+      let cid = this.queryParams.categoryId
+      if (cid && cid.length === 0) {
         //搜索框清空时，进行初始化操作并清除选中值
         this.$refs["categoryTree"].$refs.panel.checkedValue = []; // 清空选中值
         this.$refs["categoryTree"].$refs.panel.clearCheckedNodes(); // 清空级联选择器选中状态
         this.$refs["categoryTree"].$refs.panel.activePath = []; // 清除高亮
         this.$refs["categoryTree"].$refs.panel.syncActivePath(); // 初始化（只展示一级节点）
-      }
-      else {
+      } else {
         //选中分类时，给查询参数对应项赋值
         let nodesInfo = this.$refs["categoryTree"].getCheckedNodes()[0];
-        console.log("选中",nodesInfo)
-        this.queryParams.categoryId=nodesInfo.value;
+        console.log("选中", nodesInfo)
+        this.queryParams.categoryId = nodesInfo.value;
       }
     },
     //检查当前用户的出库和调拨权限
-    checkPermission(){
-      let routes=router.getRoutes();
-      for(let r of routes){
-        if(r.path==='/out-apply'){
-          this.outApply=true;
+    checkPermission() {
+      let routes = router.getRoutes();
+      for (let r of routes) {
+        if (r.path === '/out-apply') {
+          this.outApply = true;
         }
-        if(r.path==='/allot'){
-          this.allot=true;
+        if (r.path === '/allot') {
+          this.allot = true;
         }
       }
     }

@@ -42,3 +42,19 @@ export function addInApply(data) {
         data: data
     })
 }
+// 新增入库申请
+export function addOutApply(data) {
+    return request({
+        url: '/record/addOutApply',
+        method: 'post',
+        data: data
+    })
+}
+// 新增入库申请
+export function addAllotApply(data) {
+    return request({
+        url: '/record/addAllotApply',
+        method: 'post',
+        data: data
+    })
+}
