@@ -28,6 +28,18 @@
             :value="item.id">
         </el-option>
       </el-select>
+      <el-select
+          v-model="queryParams.approveStatus"
+          clearable
+          placeholder="请选择审批状态"
+          style="width: 150px;margin-left: 8px">
+        <el-option
+            v-for="item in statusList"
+            :key="item.id"
+            :label="item.label"
+            :value="item.id">
+        </el-option>
+      </el-select>
       <el-button size="small" type="primary" style="margin-left: 5px" @click="getList">查询</el-button>
       <el-button size="small" type="success" @click="resetParam">重置</el-button>
       <el-button size="small" type="success" @click="add">新增</el-button>
@@ -118,10 +130,10 @@ export default {
       goodsList: [],
       //不同审批状态
       statusList: [
-        {type: 'info', label: '未审批'},
-        {type: 'success', label: '审批通过'},
-        {type: 'danger', label: '审批驳回'},
-        {type: 'warning', label: '无法审批'}
+        {id:'0',type: 'info', label: '未审批'},
+        {id:'1',type: 'success', label: '审批通过'},
+        {id:'2',type: 'danger', label: '审批驳回'},
+        {id:'3',type: 'warning', label: '无法审批'}
       ],
       //单条出入库记录
       record: {
@@ -135,6 +147,7 @@ export default {
         fromId: null,
         categoryId: null,
         goodsName: '',
+        approveStatus:''
       },
       total: 0,
       open: false,
@@ -192,6 +205,7 @@ export default {
       this.queryParams.fromId = null;
       this.queryParams.categoryId = null;
       this.queryParams.goodsName = '';
+      this.queryParams.approveStatus = '';
     },
     handleSearchChange() {
       let cid = this.queryParams.categoryId
