@@ -95,8 +95,13 @@
             </el-select>
           </el-form-item>
         </div>
-        <el-form-item label="申请数量" style="width: 80%" prop="amount">
-          <el-input v-model="form.amount"></el-input>
+        <el-form-item label="申请数量" style="width: 100%" prop="amount">
+          <el-slider
+              v-model="form.amount"
+              :min="1" :max="maxAmount"
+              show-input
+              input-size="mini">
+          </el-slider>
         </el-form-item>
         <el-form-item label="备注" prop="applyRemark" style="width: 80%">
           <el-input
@@ -141,6 +146,8 @@ export default {
       allot: false,
       //正在新增调拨申请
       isAllot: false,
+      //申请的最大数量
+      maxAmount:0,
       tableData: [],
       categoryTree: [],
       warehouseList: [],
@@ -238,6 +245,7 @@ export default {
       if(!isAllot){
         this.form.toId=-1;
       }
+      this.maxAmount=row.amount;
       this.form.inventoryId = row.id;
       this.form.goodsId = row.goodsId;
       this.form.fromId = row.warehouseId;
