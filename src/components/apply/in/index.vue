@@ -145,7 +145,7 @@
         <el-descriptions-item label="货物名" span="1">{{ record.goodsName }}</el-descriptions-item>
         <el-descriptions-item label="所属分类名">{{ record.categoryName }}</el-descriptions-item>
         <el-descriptions-item label="目的仓库名" span="1">{{ record.toName }}</el-descriptions-item>
-        <el-descriptions-item label="申请数量">{{ record.amount }}</el-descriptions-item>
+        <el-descriptions-item label="申请数量">{{ record.amount+'（'+record.unit+'）' }}</el-descriptions-item>
         <el-descriptions-item label="占据空间">{{ record.volume + '（升）' }}</el-descriptions-item>
         <el-descriptions-item label="申请人">{{ record.applyUserName }}</el-descriptions-item>
         <el-descriptions-item label="申请时间">{{ record.applyTime }}</el-descriptions-item>

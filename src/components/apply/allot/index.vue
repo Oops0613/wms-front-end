@@ -73,7 +73,7 @@
       </el-table-column>
       <el-table-column prop="toName" label="目的仓库名" width="190">
       </el-table-column>
-      <el-table-column prop="amount" label="出库数量" width="120" sortable>
+      <el-table-column prop="amount" label="调拨数量" width="120" sortable>
       </el-table-column>
       <el-table-column prop="expirationTime" label="货物过期时间" width="150" sortable>
         <template slot-scope="scope" v-if="scope.row.hasExpirationTime==='1'">{{ scope.row.expirationTime }}</template>
@@ -102,12 +102,13 @@
                        :label-style="{ height: '40px', width: '12%'}"
                        :contentStyle="{height:'40px',width:'200px'}">
         <el-descriptions-item label="申请ID">{{ record.id }}</el-descriptions-item>
-        <el-descriptions-item label="库存ID">{{ record.inventoryId }}</el-descriptions-item>
+        <el-descriptions-item label="原库存ID">{{ record.inventoryId }}</el-descriptions-item>
+        <el-descriptions-item label="新增库存ID">{{ record.newInventoryId }}</el-descriptions-item>
         <el-descriptions-item label="货物名" span="1">{{ record.goodsName }}</el-descriptions-item>
         <el-descriptions-item label="所属分类名">{{ record.categoryName }}</el-descriptions-item>
         <el-descriptions-item label="源仓库名" span="1">{{ record.fromName }}</el-descriptions-item>
         <el-descriptions-item label="目的仓库名" span="1">{{ record.toName }}</el-descriptions-item>
-        <el-descriptions-item label="申请数量">{{ record.amount }}</el-descriptions-item>
+        <el-descriptions-item label="申请数量">{{ record.amount+'（'+record.unit+'）' }}</el-descriptions-item>
         <el-descriptions-item label="占据空间">{{ record.volume + '（升）' }}</el-descriptions-item>
         <el-descriptions-item label="申请人">{{ record.applyUserName }}</el-descriptions-item>
         <el-descriptions-item label="申请时间">{{ record.applyTime }}</el-descriptions-item>

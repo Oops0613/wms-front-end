@@ -58,3 +58,19 @@ export function addAllotApply(data) {
         data: data
     })
 }
+// 新增入库申请
+export function approvePass(data) {
+    return request({
+        url: '/record/approvePass',
+        method: 'post',
+        data: data
+    })
+}
+// 新增入库申请
+export function approveReject(data) {
+    return request({
+        url: '/record/approveReject',
+        method: 'post',
+        data: data
+    })
+}
