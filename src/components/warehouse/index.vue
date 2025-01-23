@@ -23,6 +23,14 @@
       </el-table-column>
       <el-table-column prop="remainingCapacity" label="剩余容量（升）" width="130" sortable>
       </el-table-column>
+      <el-table-column prop="percentage" label="已用空间" width="150" sortable>
+        <template slot-scope="scope">
+        <el-progress text-inside
+                     :stroke-width="14"
+                     :percentage="getPercentage(scope.row)"
+                     :color="customColorMethod"></el-progress>
+        </template>
+      </el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="150">
       </el-table-column>
       <el-table-column prop="updateTime" label="更新时间" width="150">
@@ -87,6 +95,7 @@ export default {
       total: 0,
       open: false,
       using:false,
+      percentage:0,
       form: {
         id: '',
         //仓库名
@@ -109,6 +118,21 @@ export default {
     }
   },
   methods: {
+    getPercentage(row){
+      let num=(row.capacity-row.remainingCapacity)/row.capacity*100;
+      return parseFloat(num.toFixed(2));
+    },
+    customColorMethod(percentage) {
+      if (percentage < 30) {
+        return '#67c23a';
+      } else if (percentage < 50) {
+        return '#409eff';
+      }else if (percentage < 80) {
+        return '#fd8b00';
+      }else {
+        return '#ff004b';
+      }
+    },
     handleGet(id) {
       getWarehouse(id).then(res => {
         this.form = res.data;
