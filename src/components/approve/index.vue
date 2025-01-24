@@ -70,6 +70,7 @@
       </el-select>
       <el-button size="small" type="primary" style="margin-left: 5px" @click="getList">查询</el-button>
       <el-button size="small" type="success" @click="resetParam">重置</el-button>
+      <el-button :disabled="btnDisabled" class="preApprove" size="small" type="warning" @click="handlePreApprove">预审批</el-button>
     </div>
     <el-table
         :data="tableData"
@@ -106,10 +107,12 @@
       <el-table-column prop="operate" label="操作">
         <template slot-scope="scope">
           <el-button size="small" icon="el-icon-view" type="text" @click="handleView(scope.row)">查看详情</el-button>
+          <span v-show="scope.row.approveStatus==='0'" style="margin-left: 10px">
           <el-button size="small" icon="el-icon-circle-check" type="text" @click="pass(scope.row)">通过
           </el-button>
           <el-button size="small" icon="el-icon-circle-close" type="text" @click="reject(scope.row)">驳回
           </el-button>
+          </span>
         </template>
       </el-table-column>
     </el-table>
@@ -183,9 +186,31 @@
 <script>
 import {listAllWarehouse} from "@/api/warehouse";
 import {listCategory} from "@/api/category";
-import {approvePass, approveReject, getRecord, listAllotApply, listRecord} from "@/api/record";
+import {approvePass, approveReject, getRecord, listRecord, preApprove} from "@/api/record";
 import {listAllGoods} from "@/api/goods";
 
+// window.onload = () => {
+//   const btn = document.getElementsByClassName("preApprove")[0]; //预审批按钮
+//   // 注册单击事件
+//   btn.addEventListener('click', function () {
+//     let time = 59;
+//     // 禁用按钮
+//     btn.disabled = true;
+//     // 开启定时器
+//     const timer = setInterval(function () {
+//       // 判断剩余秒数
+//       if (time === 0) {
+//         // 清除定时器和复原按钮
+//         clearInterval(timer);
+//         btn.disabled = false;
+//         btn.innerHTML = '预审批';
+//       } else {
+//         btn.innerHTML = `${time}秒后可用`;
+//         time--;
+//       }
+//     }, 1000);
+//   });
+// }
 export default {
   name: "Approve",
   data() {
@@ -236,6 +261,7 @@ export default {
       detailed: false,
       isPass: false,
       approveTitle: '',
+      btnDisabled:false
     }
   },
   methods: {
@@ -266,6 +292,32 @@ export default {
       } else {
         this.handleReject();
       }
+    },
+    handlePreApprove(){
+      preApprove().then(res=>{
+        if (res.code === 200) {
+          this.$message({
+            message: "预审批成功",
+            type: "success"
+          })
+          this.getList();
+        } else {
+          this.$message({
+            message: "预审批失败",
+            type: "error"
+          })
+        }
+      })
+      // 点击按钮后禁用
+      this.btnDisabled = true;
+      // 设置 60 秒后恢复按钮状态
+      const disabledTime = Date.now() + 60000; // 当前时间加上 60 秒
+      localStorage.setItem('disabledTime', disabledTime.toString());
+      // 设置 60 秒后恢复按钮状态
+      setTimeout(() => {
+        this.btnDisabled = false;
+        localStorage.removeItem('disabledTime'); // 60秒后清除禁用时间
+      }, 60000); // 60000 毫秒 = 60 秒
     },
     handlePass() {
       approvePass(this.form).then(res => {
@@ -371,6 +423,21 @@ export default {
   },
   beforeMount() {
     this.getList()
+  },
+  mounted() {
+    // 在页面加载时检查按钮的禁用状态
+    const disabledTime = localStorage.getItem('disabledTime');
+    if (disabledTime) {
+      const remainingTime = disabledTime - Date.now();
+      if (remainingTime > 0) {
+        // 如果禁用时间还没过去，禁用按钮
+        this.btnDisabled = true;
+        setTimeout(() => {
+          this.btnDisabled = false;
+          localStorage.removeItem('disabledTime'); // 清除存储的禁用时间
+        }, remainingTime);
+      }
+    }
   },
 }
 </script>

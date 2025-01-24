@@ -74,3 +74,10 @@ export function approveReject(data) {
         data: data
     })
 }
+//预审批
+export function preApprove() {
+    return request({
+        url: '/record/preApprove',
+        method: 'post',
+    })
+}
