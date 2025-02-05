@@ -2,7 +2,7 @@
   <div class="loginBody">
     <div class="loginDiv">
       <div class="login-content">
-        <h1 class="login-title">用户登录</h1>
+        <h1 class="login-title">超市仓储管理系统</h1>
         <el-form :model="loginForm" label-width="100px"
                  :rules="rules" ref="loginForm">
           <el-form-item label="账号" prop="userName">
@@ -13,9 +13,10 @@
             <el-input style="width: 200px" type="password" v-model="loginForm.password"
                       show-password autocomplete="off" size="small" @keyup.enter.native="confirm"></el-input>
           </el-form-item>
-          <el-form-item>
+          <el-footer style="text-align: center">
+            <el-button @click="resetParam">重 置</el-button>
             <el-button type="primary" @click="confirm" :disabled="confirm_disabled">确 定</el-button>
-          </el-form-item>
+          </el-footer>
         </el-form>
       </div>
     </div>
@@ -47,6 +48,12 @@ export default {
     }
   },
   methods: {
+    resetParam(){
+      this.loginForm={
+        userName: "",
+        password: ""
+      }
+    },
     confirm() {
       this.confirm_disabled = true;
       this.$refs.loginForm.validate((valid) => {
@@ -63,7 +70,10 @@ export default {
               })
             } else {
               this.confirm_disabled = false;
-              alert(res.msg);
+              this.$message({
+                message: res.msg,
+                type: "error"
+              })
               return false;
             }
           });
@@ -84,6 +94,8 @@ export default {
   width: 100%;
   height: 100%;
   background-color: #B3C0D1;
+  background-image: url('@/assets/background.jpeg');
+  background-size: cover;
 }
 
 .loginDiv {
@@ -94,14 +106,15 @@ export default {
   margin-left: -250px;
   width: 450px;
   height: 330px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 0 25px #909399;
   border-radius: 5%;
 
 }
-
 .login-title {
   margin: 20px 0;
   text-align: center;
+  font-family: 华文楷体;
 }
 
 .login-content {
