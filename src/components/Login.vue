@@ -114,7 +114,7 @@ export default {
 .login-title {
   margin: 20px 0;
   text-align: center;
-  font-family: 华文楷体;
+  font-family: "华文楷体";
 }
 
 .login-content {

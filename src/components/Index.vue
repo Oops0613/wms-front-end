@@ -1,6 +1,12 @@
 <template>
   <el-container style="height: 100%; border: 1px solid #eee">
-    <el-aside :width="sideWidth+'px'" style="background-color: rgb(238, 241, 246) ; height: 100%;margin-left: -1px;margin-top:-1px" >
+    <el-aside
+        :width="sideWidth+'px'"
+        style="background-color: rgb(238, 241, 246) ;
+        height: 100%;
+        margin-left: -1px;margin-top:-1px;
+        overflow-x: hidden;  /* 隐藏横向滚动条 */"
+    >
       <Aside :isCollapse="isCollapse"> <span slot="title">title</span></Aside>
     </el-aside>
 
