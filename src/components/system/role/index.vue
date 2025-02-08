@@ -1,5 +1,4 @@
 <template>
-  <!--<span>角色管理</span>-->
   <div>
     <div style="margin-bottom: 5px">
       <el-input v-model="queryParams.roleName" placeholder="输入角色名" style="width: 150px"
