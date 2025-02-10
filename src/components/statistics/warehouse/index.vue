@@ -59,16 +59,17 @@
           <el-slider
               v-model="normalRate"
               range
-              show-stops
+              :min="1"
               :max="100"
-              :step="5"
+              :step="1"
               style="width: 50%"
               :marks="marks">
           </el-slider>
           <el-button
               size="medium"
               type="success"
-              style="margin-left: 20px">
+              style="margin-left: 20px"
+              @click="getList">
             查询
           </el-button>
           <el-button
@@ -117,7 +118,7 @@
                   sortable>
                 <template slot-scope="scope">
                   <span style="color: red; font-weight: bold;">
-                    {{ scope.row.loadRate }}
+                    {{ ((1-scope.row.remainingCapacity/scope.row.capacity)*100).toFixed(2) }}%
                   </span>
                 </template>
               </el-table-column>
@@ -160,7 +161,7 @@
                   sortable>
                 <template slot-scope="scope">
                   <span style="color: limegreen; font-weight: bold;">
-                    {{ scope.row.loadRate }}
+                    {{ ((1-scope.row.remainingCapacity/scope.row.capacity)*100).toFixed(2) }}%
                   </span>
                 </template>
               </el-table-column>
@@ -174,49 +175,15 @@
 
 <script>
 import * as echarts from 'echarts';
-import {listAllWarehouse, getWarehouse} from "@/api/warehouse";
+import {listAllWarehouse, getWarehouse,getLoadRate,listWarehouseByLoadRate} from "@/api/warehouse";
 
 export default {
   name: "WarehouseStat",
   data() {
     return {
       isAlert: false,
-      tableData1: [
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "90%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "93%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "95%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "99%"},
-      ],//负载过高的仓库列表
-      tableData2: [
-        {id: '1', name: "测试数据-仓库001", updateTime: "2024-12-22 14:09:57", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", updateTime: "2024-12-22 14:09:57", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", updateTime: "2024-12-24 14:06:57", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "5%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "2%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "4%"},
-        {id: '1', name: "测试数据-仓库001", loadRate: "4%"},
-      ],//负载过低的仓库列表
+      tableData1: [],//负载过高的仓库列表
+      tableData2: [],//负载过低的仓库列表
       chart: null,  // ECharts 实例
       chartData: [5, 20, 36, 10, 10, 20, 30],
       warehouseList: [],
@@ -294,7 +261,6 @@ export default {
         this.option.yAxis.max = 100;
         this.chart.setOption(this.option);
       }
-
     },
     handleWarehouseChange() {
       let type = this.queryParams.type;
@@ -305,7 +271,15 @@ export default {
           this.chart.setOption(this.option);
         })
       }
-
+    },
+    // 获取高负载和低负载仓库列表
+    getList(){
+      listWarehouseByLoadRate(-this.normalRate[0]).then(res=>{
+        this.tableData2=res.data;
+      })
+      listWarehouseByLoadRate(this.normalRate[1]).then(res=>{
+        this.tableData1=res.data;
+      })
     },
     // 初始化图表
     initChart() {
@@ -352,6 +326,7 @@ export default {
   mounted() {
     this.initChart();
     this.updateChart();
+    this.getList();
   },
 }
 </script>
