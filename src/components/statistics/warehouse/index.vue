@@ -9,7 +9,7 @@
               filterable
               placeholder="请选择仓库"
               size="large"
-              @change="handleWarehouseChange">
+              @change="updateChart">
             <el-option
                 v-for="item in warehouseList"
                 :key="item.id"
@@ -21,7 +21,8 @@
               v-model="queryParams.days"
               placeholder="请选择天数"
               size="large"
-              style="margin-left: 20px">
+              style="margin-left: 20px"
+              @change="updateChart">
             <el-option
                 v-for="item in periodList"
                 :key="item.value"
@@ -33,15 +34,17 @@
               v-model="queryParams.type"
               active-text="使用量"
               inactive-text="使用率"
+              active-value="1"
+              inactive-value="0"
               style="margin-left: 20px;"
-              @change="handleTypeChange">
+              @change="updateChart">
           </el-switch>
           <el-button
               size="medium"
               type="primary"
               style="margin-left: auto;margin-right: 10%"
               @click="isAlert=true">
-            查看预警数据<i class="el-icon-caret-right"></i>
+            查看预警信息<i class="el-icon-caret-right"></i>
           </el-button>
         </div>
       </el-card>
@@ -50,7 +53,7 @@
       </el-card>
     </div>
     <div v-show="isAlert">
-      <h3 style="text-align: center">预警数据</h3>
+      <h3 style="text-align: center">预警信息</h3>
       <el-card class="my-box" style="margin-top: 10px">
       <span style="font-weight: bold;margin-left: 15%">
         请指定仓库负载率的正常范围：
@@ -96,22 +99,9 @@
                 height="480"
                 border
                 style="width: 100%">
-              <el-table-column
-                  prop="id"
-                  label="ID"
-                  width="80">
-              </el-table-column>
-              <el-table-column
-                  prop="name"
-                  label="仓库名"
-                  width="200">
-              </el-table-column>
-              <el-table-column
-                  prop="remainingCapacity"
-                  label="剩余容量（升）"
-                  width="150"
-                  sortable>
-              </el-table-column>
+              <el-table-column prop="id" label="ID" width="80"></el-table-column>
+              <el-table-column prop="name" label="仓库名" width="200"></el-table-column>
+              <el-table-column prop="remainingCapacity" label="剩余容量（升）" width="150" sortable></el-table-column>
               <el-table-column
                   prop="loadRate"
                   label="负载率"
@@ -139,22 +129,9 @@
                 height="480"
                 border
                 style="width: 100%;">
-              <el-table-column
-                  prop="id"
-                  label="ID"
-                  width="80">
-              </el-table-column>
-              <el-table-column
-                  prop="name"
-                  label="仓库名"
-                  width="200">
-              </el-table-column>
-              <el-table-column
-                  prop="updateTime"
-                  label="最近使用时间"
-                  width="150"
-                  sortable>
-              </el-table-column>
+              <el-table-column prop="id" label="ID" width="80"></el-table-column>
+              <el-table-column prop="name" label="仓库名" width="200"></el-table-column>
+              <el-table-column prop="updateTime" label="最近使用时间" width="150" sortable></el-table-column>
               <el-table-column
                   prop="loadRate"
                   label="负载率"
@@ -203,7 +180,7 @@ export default {
       queryParams: {
         warehouseId: '1',
         days: 7,
-        type: false,
+        type: '0',
       },
       option: {
         title: {
@@ -215,7 +192,9 @@ export default {
             fontFamily: '华文楷体',    //文字字体
           },
         },
-        tooltip: {},
+        tooltip: {
+          trigger: 'axis',
+        },
         xAxis: {
           type: 'category',  // 设置为类别类型
           boundaryGap: ['10%', '10%'],  // 不留空隙
@@ -240,38 +219,13 @@ export default {
         series: [{
           name: '使用率（%）',
           type: 'line',
+          smooth:true,
           data: [],
         }]
       }
     }
   },
   methods: {
-    handleTypeChange() {
-      let type = this.queryParams.type;
-      //更改Y轴数值说明
-      let YLabel = (type === false) ? "使用率（%）" : "使用量（升）";
-      this.option.series[0].name = YLabel;
-      this.option.yAxis.name = YLabel;
-      if (type === true) {
-        getWarehouse(this.queryParams.warehouseId).then(res => {
-          this.option.yAxis.max = res.data.capacity;
-          this.chart.setOption(this.option);
-        })
-      } else {
-        this.option.yAxis.max = 100;
-        this.chart.setOption(this.option);
-      }
-    },
-    handleWarehouseChange() {
-      let type = this.queryParams.type;
-      //更改Y轴最大值
-      if (type === true) {
-        getWarehouse(this.queryParams.warehouseId).then(res => {
-          this.option.yAxis.max = res.data.capacity;
-          this.chart.setOption(this.option);
-        })
-      }
-    },
     // 获取高负载和低负载仓库列表
     getList(){
       listWarehouseByLoadRate(-this.normalRate[0]).then(res=>{
@@ -295,26 +249,45 @@ export default {
     },
     // 更新图表的数据
     updateChart() {
-      const n = this.chartData.length;  // 获取数据的长度
-      const dates = [];  // 存储日期的数组
-      const values = [];  // 存储对应的值
+      getLoadRate(this.queryParams).then(res=>{
+        let result=res.data;
+        let type = this.queryParams.type;
+        //更改Y轴数值说明
+        let YLabel = (type === '0') ? "使用率（%）" : "使用量（升）";
+        this.option.series[0].name = YLabel;
+        this.option.yAxis.name = YLabel;
+        if(type==='0'){//使用率，需要以百分比显示
+          result=result.map(x=>x*100);
+          this.option.yAxis.max = 100;
+        }else if(type==='1') {
+          this.option.yAxis.max = null;
+          //更改Y轴最大值
+          // getWarehouse(this.queryParams.warehouseId).then(res => {
+          //   this.option.yAxis.max = res.data.capacity;
+          //   this.chart.setOption(this.option);
+          // })
+        }
+        this.chartData=result;
+        const n = result.length;  // 获取数据的长度
+        const dates = [];  // 存储日期的数组
 
-      // 获取今天的日期
-      const today = new Date();
+        // 获取今天的日期
+        const today = new Date();
 
-      // 生成 n 个日期，从今天开始递减
-      for (let i = 0; i < n; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - (n - i));  // 递减日期
-        dates.push(date.toLocaleDateString('en-US', {
-          month: '2-digit',
-          day: '2-digit'
-        }));  // 格式化日期（02/03）
-      }
-      // 更新 ECharts 图表的配置
-      this.option.xAxis.data = dates;
-      this.option.series[0].data = this.chartData;
-      this.chart.setOption(this.option);
+        // 生成 n 个日期，从今天开始递减
+        for (let i = 0; i < n; i++) {
+          const date = new Date(today);
+          date.setDate(today.getDate() - (n - i));  // 递减日期
+          dates.push(date.toLocaleDateString('en-US', {
+            month: '2-digit',
+            day: '2-digit'
+          }));  // 格式化日期（02/03）
+        }
+        // 更新 ECharts 图表的配置
+        this.option.xAxis.data = dates;
+        this.option.series[0].data = this.chartData;
+        this.chart.setOption(this.option);
+      })
     },
     beforeDestroy() {
       // 在组件销毁时销毁图表实例

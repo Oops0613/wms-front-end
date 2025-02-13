@@ -47,11 +47,11 @@ export function delWarehouse(id) {
     })
 }
 //获取某个仓库最近的负载率日变化
-export function getLoadRate(data) {
+export function getLoadRate(query) {
     return request({
         url: '/warehouse/getLoadRate',
         method: 'get',
-        data: data
+        params:query
     })
 }
 export function listWarehouseByLoadRate(bound) {
