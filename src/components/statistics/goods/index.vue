@@ -87,7 +87,7 @@
                   sortable>
                 <template slot-scope="scope">
                   <span style="color: red; font-weight: bold;">
-                    {{ scope.row.amount-scope.row.lowThreshold }}
+                    {{ scope.row.amount - scope.row.lowThreshold }}
                   </span>
                 </template>
               </el-table-column>
@@ -117,7 +117,7 @@
                   sortable>
                 <template slot-scope="scope">
                   <span style="color: limegreen; font-weight: bold;">
-                    +{{ scope.row.amount-scope.row.lowThreshold }}
+                    +{{ scope.row.amount - scope.row.lowThreshold }}
                   </span>
                 </template>
               </el-table-column>
@@ -139,8 +139,8 @@
                 border
                 style="width: 100%;">
               <el-table-column prop="id" label="库存ID" width="60"></el-table-column>
-<!--              <el-table-column prop="goodsID" label="货物ID" width="80"></el-table-column>-->
-              <el-table-column prop="name" label="货物名" width="150" :show-overflow-tooltip="true"></el-table-column>
+              <!--              <el-table-column prop="goodsID" label="货物ID" width="80"></el-table-column>-->
+              <el-table-column prop="goodsName" label="货物名" width="150" :show-overflow-tooltip="true"></el-table-column>
               <el-table-column
                   prop="expirationTime"
                   label="过期时间"
@@ -192,7 +192,7 @@
 </template>
 
 <script>
-import {getGoods, listAllGoods} from "@/api/goods";
+import {getAmountChange, getGoods, getGoodsDistribution, getWarningList, listAllGoods} from "@/api/goods";
 import * as echarts from "echarts";
 
 export default {
@@ -208,51 +208,42 @@ export default {
       ],
       tableData1: [],//库存不足的货物列表
       tableData2: [],//库存积压的货物列表
-      tableData3: [
-        {id:'1',name:'测试呵呵呵呵我2322242',expirationTime:'2025-01-24 12:28:37',amount:34},
-        {id:'1',name:'测试呵呵呵呵我',expirationTime:'2025-01-24 12:28:37',amount:34},
-        {id:'1',name:'测试呵呵呵呵我',expirationTime:'2025-01-24 12:28:37',amount:34},
-        {id:'1',name:'测试呵呵呵呵我',expirationTime:'2025-01-24 12:28:37',amount:34},
-        {id:'1',name:'测试呵呵呵呵我',expirationTime:'2025-01-24 12:28:37',amount:34},
-        {id:'1',name:'测试呵呵呵呵我',expirationTime:'2025-01-24 12:28:37',amount:34},
-        {id:'1',name:'测试呵呵呵呵我',expirationTime:'2025-01-24 12:28:37',amount:34},
-        {id:'1',name:'测试呵呵呵呵我',expirationTime:'2025-01-24 12:28:37',amount:34},
-        {id:'1',name:'测试呵呵呵呵我',expirationTime:'2025-01-24 12:28:37',amount:34},
-        {id:'1',name:'测试呵呵呵呵我',expirationTime:'2025-01-24 12:28:37',amount:34},
-      ],//临近过期的库存列表
+      tableData3: [],//临近过期的库存列表
       lineChart: null,  // 货物统计折线图
       columnChart: null,  // 货物分布柱状图
       inData: [5, 20, 36, 10, 10, 20, 30],//入库数量日变化
       outData: [5, 10, 37, 17, 15, 29, 31],//出库数量日变化
       stockData: [5, 24, 36, 16, 10, 67, 36],//库存数量日变化
-      distributionData:[
-          { name: 'Item 1', amount: 324 },
-          { name: 'Item 2', amount: 567 },
-          { name: 'Item 3', amount: 12 },
-          { name: 'Item 4', amount: 785 },
-          { name: 'Item 5', amount: 432 },
-          { name: 'Item 6', amount: 234 },
-          { name: 'Item 7', amount: 921 },
-          { name: 'Item 8', amount: 678 },
-          { name: 'Item 9', amount: 101 },
-          { name: 'Item 10', amount: 563 }
+      distributionData: [
       ],//货物在仓库的分布数据
       queryParams: {
         goodsId: '1',
         days: 7,
       },
-      unitName:'',//当前货物的计量单位
+      unitName: '',//当前货物的计量单位
       //折线图配置
       option1: {
-        title: {
-          text: '库存数量日变化',
-          x: 'center',  // 使标题水平居中
-          textAlign: 'auto',
-          textStyle: {    // 标题样式
-            fontSize: 24,    //字体大小
-            fontFamily: '华文楷体',    //文字字体
+        title: [
+          {
+            text: '库存数量日变化',
+            x: 'center',  // 使标题水平居中
+            textAlign: 'auto',
+            textStyle: {    // 标题样式
+              fontSize: 24,    //字体大小
+              fontFamily: '华文楷体',    //文字字体
+            },
           },
-        },
+          {
+            right: '10%',
+            text: '统计于每日24点',
+            textStyle: {
+              lineHeight:30,
+              fontSize: 15,
+              fontWeight:'normal',
+              fontFamily: '宋体'
+            }
+          }
+        ],
         tooltip: {
           trigger: 'axis',  // 设置为 'axis' 以展示所有系列的数据
           axisPointer: {
@@ -275,13 +266,13 @@ export default {
             //y轴
             show: true,
           },
-           name: '货物数量',          // 在y轴的左侧显示单位
-           nameLocation: 'end',  // 使名称位于轴线的起始处
-           nameGap: 20,           // 增加名称与轴线之间的距离
+          name: '货物数量',          // 在y轴的左侧显示单位
+          nameLocation: 'end',  // 使名称位于轴线的起始处
+          nameGap: 20,           // 增加名称与轴线之间的距离
         },
         legend: {
-          top:'6%',
-          data: ['入库量', '出库量','库存量']
+          top: '6%',      // 图例
+          data: ['入库量', '出库量', '库存量']
         },
         series: [
           {
@@ -319,7 +310,7 @@ export default {
                     show: true, // 显示文本标签
                     position: 'end', // 文字位置，start表示在虚线的起始位置显示
                     formatter: '低库存阈值({c})', // 文本显示的内容
-                    color:'#FF0000'
+                    color: '#FF0000'
                   }
                 },
                 {
@@ -329,14 +320,14 @@ export default {
                   symbol: 'none', //去掉圆点
                   lineStyle: {
                     type: 'dashed', // 虚线样式
-                    color: '#fd5200', // 虚线颜色
+                    color: '#ffbb00', // 虚线颜色
                     width: 1 // 虚线宽度
                   },
                   label: {
                     show: true, // 显示文本标签
                     position: 'end', // 文字位置，start表示在虚线的起始位置显示
                     formatter: '高库存阈值({c})', // 文本显示的内容
-                    color:'#fd5200'
+                    color: '#ffbb00'
                   }
                 }
               ]
@@ -373,7 +364,10 @@ export default {
         ],
         yAxis: [
           {
-            type: 'value'
+            type: 'value',
+            name: '货物数量',          // 在y轴的左侧显示单位
+            nameLocation: 'end',  // 使名称位于轴线的起始处
+            nameGap: 20,           // 增加名称与轴线之间的距离
           }
         ],
         series: [
@@ -385,11 +379,11 @@ export default {
             data: [],  // 使用提取的 yData
             itemStyle: {
               normal: {
-                color: new echarts.graphic.LinearGradient(1, 0, 0, 0, [{
+                color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [{
 // 四个数字分别对应 数组中颜色的开始位置，分别为 右，下，左，上。例如（1,0,0,0 ）代表从右边开始渐
 // 变。offset取值为0~1，0代表开始时的颜色，1代表结束时的颜色，柱子表现为这两种颜色的渐变。
                   offset: 0,
-                 color: '#4d76ff',
+                  color: '#4d76ff',
                 }, {
                   offset: 1,
                   color: '#80aaff'
@@ -411,8 +405,8 @@ export default {
       this.lineChart = echarts.init(document.getElementById('line-chart'));
       this.lineChart.setOption(this.option1);  // 设置图表的配置项
 
-      let myChart=document.getElementById('column-chart');
-      myChart.style.width=window.innerWidth*0.8+'px';
+      let myChart = document.getElementById('column-chart');
+      myChart.style.width = window.innerWidth * 0.8 + 'px';
       this.columnChart = echarts.init(myChart);
       this.columnChart.setOption(this.option2);
 
@@ -421,16 +415,18 @@ export default {
       window.addEventListener('resize', this.columnChart.resize);
     },
     updateLineChart() {
-      getGoods(this.queryParams.goodsId).then(res=>{
-        this.unitName=res.data.unit;
-        this.option1.yAxis.name='货物数量（'+this.unitName+'）';
-        this.option1.series[2].markLine.data[0].yAxis=res.data.lowThreshold;//更新低库存阈值警戒线
-        this.option1.series[2].markLine.data[1].yAxis=res.data.highThreshold;//更新高库存阈值警戒线
+      getGoods(this.queryParams.goodsId).then(res => {
+        this.unitName = res.data.unit;
+        this.option1.yAxis.name = '货物数量（' + this.unitName + '）';
+        this.option1.series[2].markLine.data[0].yAxis = res.data.lowThreshold;//更新低库存阈值警戒线
+        this.option1.series[2].markLine.data[1].yAxis = res.data.highThreshold;//更新高库存阈值警戒线
         this.lineChart.setOption(this.option1);
       })
-      //getLoadRate(this.queryParams).then(res=>{
-        //let result=res.data;
-        //this.chartData=result;
+      getAmountChange(this.queryParams).then(res => {
+        let result = res.data;
+        this.inData = result.inList;
+        this.outData = result.outList;
+        this.stockData = result.stockList;
         const n = this.inData.length;  // 获取数据的长度
         const dates = [];  // 存储日期的数组
 
@@ -452,22 +448,32 @@ export default {
         this.option1.series[1].data = this.outData;
         this.option1.series[2].data = this.stockData;
         this.lineChart.setOption(this.option1);
-      //})
+      })
     },
-    updateColumnChart(){
-      // 提取 X 轴和 Y 轴数据
-      const xData = this.distributionData.map(item => item.name);
-      const yData = this.distributionData.map(item => item.amount);
-      this.option2.xAxis[0].data=xData;
-      this.option2.series[0].data=yData;
-      this.columnChart.setOption(this.option2);
+    updateColumnChart() {
+      getGoodsDistribution(this.queryParams.goodsId).then(res=>{
+        this.distributionData=res.data;
+        // 提取 X 轴和 Y 轴数据
+        const xData = this.distributionData.map(item => item.warehouseName);
+        const yData = this.distributionData.map(item => item.amount);
+        this.option2.xAxis[0].data = xData;
+        this.option2.series[0].data = yData;
+        this.columnChart.setOption(this.option2);
+      })
+    },
+    getList(){
+      getWarningList().then(res=>{
+        this.tableData1=res.data.lowList;
+        this.tableData2=res.data.highList;
+        this.tableData3=res.data.expiredList;
+      })
     }
   },
   mounted() {
     this.initChart();
     this.updateLineChart();
     this.updateColumnChart();
-    //this.getList();
+    this.getList();
   },
 }
 </script>

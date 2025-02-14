@@ -47,3 +47,25 @@ export function delGoods(id) {
         method: 'delete'
     })
 }
+//查询库存数量日变化
+export function getAmountChange(query){
+    return request({
+        url:'/goods/getAmountChange',
+        method:'get',
+        params:query
+    })
+}
+// 查询预警列表
+export function getWarningList() {
+    return request({
+        url: '/goods/getWarningList',
+        method: 'get'
+    })
+}
+// 查询货物在仓库的分布情况
+export function getGoodsDistribution(id) {
+    return request({
+        url: '/goods/getGoodsDistribution/' + id,
+        method: 'get'
+    })
+}

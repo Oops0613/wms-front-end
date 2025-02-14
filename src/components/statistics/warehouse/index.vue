@@ -108,7 +108,7 @@
                   sortable>
                 <template slot-scope="scope">
                   <span style="color: red; font-weight: bold;">
-                    {{ ((1-scope.row.remainingCapacity/scope.row.capacity)*100).toFixed(2) }}%
+                    {{ ((1 - scope.row.remainingCapacity / scope.row.capacity) * 100).toFixed(2) }}%
                   </span>
                 </template>
               </el-table-column>
@@ -138,7 +138,7 @@
                   sortable>
                 <template slot-scope="scope">
                   <span style="color: limegreen; font-weight: bold;">
-                    {{ ((1-scope.row.remainingCapacity/scope.row.capacity)*100).toFixed(2) }}%
+                    {{ ((1 - scope.row.remainingCapacity / scope.row.capacity) * 100).toFixed(2) }}%
                   </span>
                 </template>
               </el-table-column>
@@ -152,7 +152,7 @@
 
 <script>
 import * as echarts from 'echarts';
-import {listAllWarehouse, getWarehouse,getLoadRate,listWarehouseByLoadRate} from "@/api/warehouse";
+import {listAllWarehouse,  getLoadRate, listWarehouseByLoadRate} from "@/api/warehouse";
 
 export default {
   name: "WarehouseStat",
@@ -183,15 +183,27 @@ export default {
         type: '0',
       },
       option: {
-        title: {
-          text: '仓库负载日变化',
-          x: 'center',  // 使标题水平居中
-          textAlign: 'auto',
-          textStyle: {    // 标题样式
-            fontSize: 24,    //字体大小
-            fontFamily: '华文楷体',    //文字字体
+        title: [
+          {
+            text: '仓库负载日变化',
+            x: 'center',  // 使标题水平居中
+            textAlign: 'auto',
+            textStyle: {    // 标题样式
+              fontSize: 24,    //字体大小
+              fontFamily: '华文楷体',    //文字字体
+            },
           },
-        },
+          {
+            right: '10%',
+            text: '统计于每日24点',
+            textStyle: {
+              lineHeight:30,
+              fontSize: 15,
+              fontWeight:'normal',
+              fontFamily: '宋体'
+            }
+          }
+        ],
         tooltip: {
           trigger: 'axis',
         },
@@ -219,7 +231,7 @@ export default {
         series: [{
           name: '使用率（%）',
           type: 'line',
-          smooth:true,
+          smooth: true,
           data: [],
         }]
       }
@@ -227,12 +239,12 @@ export default {
   },
   methods: {
     // 获取高负载和低负载仓库列表
-    getList(){
-      listWarehouseByLoadRate(-this.normalRate[0]).then(res=>{
-        this.tableData2=res.data;
+    getList() {
+      listWarehouseByLoadRate(-this.normalRate[0]).then(res => {
+        this.tableData2 = res.data;
       })
-      listWarehouseByLoadRate(this.normalRate[1]).then(res=>{
-        this.tableData1=res.data;
+      listWarehouseByLoadRate(this.normalRate[1]).then(res => {
+        this.tableData1 = res.data;
       })
     },
     // 初始化图表
@@ -249,17 +261,17 @@ export default {
     },
     // 更新图表的数据
     updateChart() {
-      getLoadRate(this.queryParams).then(res=>{
-        let result=res.data;
+      getLoadRate(this.queryParams).then(res => {
+        let result = res.data;
         let type = this.queryParams.type;
         //更改Y轴数值说明
         let YLabel = (type === '0') ? "使用率（%）" : "使用量（升）";
         this.option.series[0].name = YLabel;
         this.option.yAxis.name = YLabel;
-        if(type==='0'){//使用率，需要以百分比显示
-          result=result.map(x=>x*100);
+        if (type === '0') {//使用率，需要以百分比显示
+          result = result.map(x => x * 100);
           this.option.yAxis.max = 100;
-        }else if(type==='1') {
+        } else if (type === '1') {
           this.option.yAxis.max = null;
           //更改Y轴最大值
           // getWarehouse(this.queryParams.warehouseId).then(res => {
@@ -267,7 +279,7 @@ export default {
           //   this.chart.setOption(this.option);
           // })
         }
-        this.chartData=result;
+        this.chartData = result;
         const n = result.length;  // 获取数据的长度
         const dates = [];  // 存储日期的数组
 
