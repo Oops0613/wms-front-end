@@ -1,30 +1,31 @@
- <template>
-    <el-menu :default-active="activeMenu"
-             mode="vertical"
-             theme="dark"
-             background-color="#323232"
-             text-color="#fff"
-             active-text-color="#26ffdf"
-             style="height: 100vh;width: 200px"
-             :collapse='isCollapse'
-             :collapse-transition="false"
-             router
-    >
-      <template v-for="item in menu">
-        <el-submenu v-if="item.children && item.children.length" :key="item.id" :index="'/'+item.path">
-          <i :class="item.icon" slot="title"></i>
-          <span slot="title">{{ item.menuName }}</span>
-          <el-menu-item v-for="subItem in item.children" :key="subItem.id" :index="'/'+subItem.path">
-            <i :class="subItem.icon"></i>
-            <span slot="title">{{ subItem.menuName }}</span>
-          </el-menu-item>
-        </el-submenu>
-        <el-menu-item v-else :key="item.id" :index="'/'+item.path">
-          <i :class="item.icon"></i>
-          <span slot="title">{{ item.menuName }}</span>
+<template>
+  <el-menu :default-active="activeMenu"
+           mode="vertical"
+           theme="dark"
+           background-color="#323232"
+           text-color="#fff"
+           active-text-color="#26ffdf"
+           style="height: 100vh;margin-left: -1px;margin-top:-1px;"
+           :width="width"
+           :collapse='isCollapse'
+           :collapse-transition="false"
+           router
+  >
+    <template v-for="item in menu">
+      <el-submenu v-if="item.children && item.children.length" :key="item.id" :index="'/'+item.path">
+        <i :class="item.icon" slot="title"></i>
+        <span slot="title">{{ item.menuName }}</span>
+        <el-menu-item v-for="subItem in item.children" :key="subItem.id" :index="'/'+subItem.path">
+          <i :class="subItem.icon"></i>
+          <span slot="title">{{ subItem.menuName }}</span>
         </el-menu-item>
-      </template>
-    </el-menu>
+      </el-submenu>
+      <el-menu-item v-else :key="item.id" :index="'/'+item.path">
+        <i :class="item.icon"></i>
+        <span slot="title">{{ item.menuName }}</span>
+      </el-menu-item>
+    </template>
+  </el-menu>
 </template>
 <script>
 import {getRouters} from "@/api/user";
@@ -37,22 +38,23 @@ export default {
       activeMenu: '/Home'
     };
   },
-  computed:{
-    "menu":{
-      get(){
+  computed: {
+    "menu": {
+      get() {
         return this.$store.state.menu;
       }
     }
   },
   props: {
+    width: String,
     isCollapse: Boolean,
   },
   created() {
-    this.activeMenu=sessionStorage.getItem("lastVisitedRoute")
-    getRouters().then(res=>{
+    this.activeMenu = sessionStorage.getItem("lastVisitedRoute")
+    getRouters().then(res => {
       console.log("aside刷新")
       //侧边栏在权限修改后能及时更新
-      this.$store.commit("setMenu",res.data.menus);
+      this.$store.commit("setMenu", res.data.menus);
     })
   }
 };
@@ -61,11 +63,11 @@ export default {
 /*由于 element-ui 的<el-menu>标签本身希望里面嵌套的是<el-menu-item>,<el-submenu>,<el-menu-item-group>之一，但是却嵌套了<div>,而导致收折就隐藏不了文字*/
 /*隐藏文字*/
 .el-menu--collapse .el-submenu__title span {
-/*  display: none;*/
+  /*  display: none;*/
 }
 
 /*隐藏 > */
 .el-menu--collapse .el-submenu__title .el-submenu__icon-arrow {
-/*  display: none;*/
+  /*  display: none;*/
 }
 </style>

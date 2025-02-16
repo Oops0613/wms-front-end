@@ -7,7 +7,7 @@
         margin-left: -1px;margin-top:-1px;
         overflow-x: hidden;  /* 隐藏横向滚动条 */"
     >
-      <Aside :isCollapse="isCollapse"> <span slot="title">title</span></Aside>
+      <Aside :isCollapse="isCollapse" :width="sideWidth+'px'" ></Aside>
     </el-aside>
 
     <el-container style="height: 100%">
