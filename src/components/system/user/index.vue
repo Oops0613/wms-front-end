@@ -8,10 +8,14 @@
                 suffix-icon="el-icon-search"
                 @keyup.enter.native="getList">
       </el-input>
-      <!--      <el-select v-model="order" filterable placeholder="请选择排序方式" style="margin-left: 5px">-->
-      <!--        <el-option v-for="item in orders" :key="item.value" :label="item.label" :value="item.value">-->
-      <!--        </el-option>-->
-      <!--      </el-select>-->
+      <el-select v-model="queryParams.roleId" clearable placeholder="请选择角色" style="width: 150px;margin-left: 8px">
+        <el-option
+            v-for="item in roles"
+            :key="item.id"
+            :label="item.roleName"
+            :value="item.id">
+        </el-option>
+      </el-select>
       <el-button size="small" type="primary" style="margin-left: 5px" @click="getList">查询</el-button>
       <el-button size="small" type="success" @click="resetParam">重置</el-button>
       <el-button size="small" type="success" @click="add">新增</el-button>
@@ -112,7 +116,8 @@ export default {
         pageNum: 1,
         pageSize: 10,
         realName: '',
-        phonenumber: ''
+        phonenumber: '',
+        roleId:null
       },
       total: 0,
       open: false,
@@ -155,7 +160,6 @@ export default {
   methods: {
     handleGet(id) {
       getUser(id).then(res => {
-        //console.log(res);
         this.form = res.data;
       })
     },
@@ -174,8 +178,6 @@ export default {
       });
     },
     edit(row) {
-      this.adding = false;
-      //console.log(row)
       this.handleGet(row.id);
       this.form.id = row.id;
       this.open = true;
@@ -198,7 +200,6 @@ export default {
       })
     },
     handleDelete(id) {
-      //console.log(id)
       delUser(id).then(res => {
         if (res.code === 200) {
           this.$message({
@@ -215,7 +216,6 @@ export default {
       })
     },
     handleResetPwd(id) {
-      //console.log(id)
       resetPassword(id).then(res => {
         if (res.code === 200) {
           this.$message({
@@ -232,7 +232,6 @@ export default {
       })
     },
     add() {
-      this.adding = true;
       this.open = true;
       this.$nextTick(() => {
         //this.form.password='';
@@ -261,20 +260,13 @@ export default {
       //加载已有的角色列表
       listAllRole().then(res => {
         this.roles = res.data;
-        //console.log(this.roles)
       })
       listUser(this.queryParams).then(res => {
-        //console.log(res)
-        //console.log("msn", res.data)
         if (res.code === 200) {
           this.tableData = res.data.rows;
-          //console.log("table",this.tableData)
           //给列表每行添加roleName
           this.tableData.forEach(row => {
-            //console.log("row",row)
-            let roleName = this.getRoleNameById(row.roleId);
-            row.roleName = roleName
-            console.log(row.id, roleName)
+            row.roleName = this.getRoleNameById(row.roleId)
           })
           this.total = parseInt(res.data.total);
         } else {
@@ -297,7 +289,6 @@ export default {
     resetParam() {
       this.queryParams.realName = '';
       this.queryParams.phonenumber = '';
-      //this.order = ''
     },
     resetForm() {
       this.form = {

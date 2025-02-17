@@ -18,9 +18,7 @@
   </div>
 </template>
 <script>
-import request from "@/request";
 import {logout,getInfo} from "@/api/user";
-import {resetRouter} from "@/router";
 
 export default {
   name:"Header",
@@ -38,11 +36,9 @@ export default {
   },
   methods:{
     toUser(){
-      console.log("user")
       this.$router.push("/Home");
     },
     handleLogout(){
-      console.log("log out")
       this.$confirm('确定退出登录？','提示',{
         confirmButtonText:"确定",
         type:"warning",
@@ -55,11 +51,12 @@ export default {
         this.$router.push("/");
         logout().then(res=>{
           if(res.code==200){
-            //resetRouter();
             sessionStorage.clear();
+            //登出后清空vuex
+            this.$store.commit("resetMenu");
           }
           else {
-            alert("res.msg");
+            alert(res.msg);
           }
         })
         //this.$store.commit('clearRoute');
@@ -80,19 +77,15 @@ export default {
     initUser(){
       getInfo().then(res=>{
         if(res.code==200){
-          //console.log("user",res.data.user)
           this.user=res.data.user;
         }
       })
     }
   },
-  created() {
-
-  },
   mounted() {
     this.initUser();
-    this.$router.push("/Home")
-    console.log('重定向至Home')
+    // this.$router.push("/Home")
+    // console.log('重定向至Home')
   },
   props:{
     icon:String

@@ -6,8 +6,9 @@
                 @keyup.enter.native="getList">
       </el-input>
       <el-cascader
+          placeholder="请选择分类"
           v-model="queryParams.categoryId"
-          style="width: 200px;margin-left: 10px"
+          style="width: 150px;margin-left: 8px"
           clearable
           ref="categoryTree2"
           :options="categoryTree2"
@@ -79,7 +80,19 @@
         <el-form-item label="计量单位" style="width: 80%" prop="unit">
           <el-input v-model="form.unit"></el-input>
         </el-form-item>
-        <el-form-item label="单位容积" style="width: 80%" prop="volumePerUnit">
+        <el-form-item label="单位价格" style="width: 80%" prop="pricePerUnit">
+          <span slot="label">
+            <el-tooltip
+                content="每单位货物价格，价格单位：RMB元"
+                placement="top"
+            >
+              <i class="el-icon-question"/>
+            </el-tooltip>
+            单价
+          </span>
+          <el-input v-model="form.pricePerUnit"></el-input>
+        </el-form-item>
+        <el-form-item label="单位容积" style="width: 80%" prop="volumePerUnit" v-show="!using">
           <span slot="label">
             <el-tooltip
                 content="每单位货物需要多少仓储空间，容积单位：升"
@@ -134,17 +147,18 @@
         <el-button type="primary" @click="save">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="货物详情" :visible.sync="detailed" width="50%" center>
+    <el-dialog title="货物详情" :visible.sync="detailed" width="60%" center>
       <el-descriptions size="medium" border :column="3"
                        :label-style="{ height: '40px', width: '12%'}"
                        :contentStyle="{height:'40px',width:'200px'}">
         <el-descriptions-item label="ID">{{goods.id}}</el-descriptions-item>
-        <el-descriptions-item label="货物名" span="2">{{goods.name}}</el-descriptions-item>
+        <el-descriptions-item label="货物名" span="1">{{goods.name}}</el-descriptions-item>
         <el-descriptions-item label="所属分类名">{{goods.categoryName}}</el-descriptions-item>
+        <el-descriptions-item label="单价">{{goods.pricePerUnit+'（元/'+goods.unit+'）'}}</el-descriptions-item>
         <el-descriptions-item label="单位容积">{{goods.volumePerUnit+'（升/'+goods.unit+'）'}}</el-descriptions-item>
         <el-descriptions-item label="占据空间">{{goods.amount*goods.volumePerUnit+'（升）'}}</el-descriptions-item>
-        <el-descriptions-item label="库存总数">{{goods.amount+'（'+goods.unit+'）'}}</el-descriptions-item>
         <el-descriptions-item label="低库存阈值" :label-style="{color:'#ff004b'}">{{goods.lowThreshold+'（'+goods.unit+'）'}}</el-descriptions-item>
+        <el-descriptions-item label="库存总数">{{goods.amount+'（'+goods.unit+'）'}}</el-descriptions-item>
         <el-descriptions-item label="高库存阈值" :label-style="{color:'#00aeff'}">{{goods.highThreshold+'（'+goods.unit+'）'}}</el-descriptions-item>
         <el-descriptions-item label="创建时间">{{goods.createTime}}</el-descriptions-item>
         <el-descriptions-item label="修改时间">{{goods.updateTime}}</el-descriptions-item>
@@ -161,7 +175,7 @@
 
 <script>
 import {listGoods,getGoods,addGoods,updateGoods,delGoods} from "@/api/goods";
-import {listCategory} from "@/api/category";
+import {listAvailableCategory} from "@/api/category";
 
 export default {
   name: "Goods",
@@ -176,9 +190,12 @@ export default {
       }
     };
     return {
+      using:false,
       tableData: [],
       categoryList:[],
+      //填写表单时使用
       categoryTree:[],
+      //筛选条件使用
       categoryTree2:[],
       queryParams: {
         pageNum: 1,
@@ -191,6 +208,7 @@ export default {
       detailed:false,
       goods:{
         amount:0,
+        pricePerUnit:0,
         volumePerUnit:0,
       },
       form: {
@@ -199,8 +217,12 @@ export default {
         name: '',
         //所属分类ID
         categoryId: '',
+        //所属分类名
+        categoryName: '',
         //计量单位
         unit: '',
+        //每单位价格
+        pricePerUnit: '',
         //每单位所占容积
         volumePerUnit: '',
         //低库存阈值
@@ -221,6 +243,10 @@ export default {
         unit: [
           {required: true, message: "请输入计量单位", trigger: 'blur'},
           {max: 5, message: "不超过5个字符", trigger: 'blur'},
+        ],
+        pricePerUnit: [
+          {required: true, message: "请输入每单位价格", trigger: 'blur'},
+          {pattern: /^\d+(\.\d{1,2})?$/, message: "请输入正数，最多2位小数", trigger: 'blur'}
         ],
         volumePerUnit: [
           {required: true, message: "请输入每单位所占容积", trigger: 'blur'},
@@ -263,7 +289,7 @@ export default {
       });
     },
     edit(row) {
-      this.adding = false;
+      this.using = row.amount>0;
       this.handleGet(row.id);
       this.form.id = row.id;
       this.open = true;
@@ -302,6 +328,7 @@ export default {
       })
     },
     add() {
+      this.using=false
       this.open = true;
       this.$nextTick(() => {
         this.resetForm();
@@ -327,20 +354,15 @@ export default {
 
     getList() {
       //加载已有的分类列表
-      listCategory().then(res => {
+      listAvailableCategory().then(res => {
         this.categoryList=res.data
         this.categoryTree = this.handleTree(res.data, 'id')
         this.categoryTree2 = this.handleTree(res.data, 'id')
         console.log("分类树，",this.categoryList)
       })
       listGoods(this.queryParams).then(res => {
-        console.log(res)
         if (res.code === 200) {
           this.tableData = res.data.rows;
-          //给列表每行添加分类名
-          this.tableData.forEach(row => {
-            row.categoryName = this.getCategoryNameById(row.categoryId)
-          })
           this.total = parseInt(res.data.total);
         } else {
           alert("获取失败");
@@ -368,6 +390,7 @@ export default {
         id: '',
         name: '',
         categoryId: '',
+        categoryName: '',
         unit: '',
         volumePerUnit: '',
         lowThreshold:'',
@@ -376,14 +399,6 @@ export default {
         remark:'',
       }
       //this.$refs.form.resetFields();
-    },
-    getCategoryNameById(id) {
-      for (let c of this.categoryList) {
-        if (c.id === id) {
-          return c.name;
-        }
-      }
-      return "";
     },
     handleSearchChange(){
       let cid=this.queryParams.categoryId
@@ -400,13 +415,13 @@ export default {
         console.log("选中",nodesInfo)
         this.queryParams.categoryId=nodesInfo.value;
       }
-
     },
     handleFormChange(){
       //选中分类时，给表单对应项赋值
       let nodesInfo = this.$refs["categoryTree"].getCheckedNodes()[0];
       this.form.categoryId=nodesInfo.value;
-    }
+      this.form.categoryName=nodesInfo.label;
+    },
   },
   beforeMount() {
     this.getList()

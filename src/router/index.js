@@ -4,13 +4,12 @@ const routes = [
     {
         path: "/",
         name: "login",
-        component: () => import("../components/Login")
+        component: () => import("@/components/Login")
     },
     {
         path: "/Index",
-        //redirect:'/Home',
         name: "index",
-        component: () => import("../components/Index"),
+        component: () => import("@/components/Index"),
         children: [
             {
                 path: "/Home",
@@ -18,7 +17,7 @@ const routes = [
                 mata: {
                     title: "首页"
                 },
-                component: () => import("../components/Home"),
+                component: () => import("@/components/Home"),
             },
         ]
     }
@@ -46,6 +45,8 @@ router.beforeEach((to, from, next) => {
             next("/");
         } else {
             document.title = "超市仓储管理系统";
+            // 保存路由路径到 sessionStorage
+            sessionStorage.setItem('lastVisitedRoute', to.fullPath)
             next();
         }
     }
@@ -57,15 +58,6 @@ export function resetRouter() {
         routes: routes
     }).matcher
     router.options.routes = [];//@TODO 手动清除路由
-    // console.log("重置前：",router)
-    //
-    // const newRouter = new VueRouter({
-    //     mode:"history",
-    //     routes:[]
-    // })
-    // console.log("空白路由：",newRouter);
-    // router.matcher = newRouter.matcher;
-    console.log("重置后：", router)
 }
 
 export default router;

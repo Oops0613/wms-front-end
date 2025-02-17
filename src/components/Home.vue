@@ -1,5 +1,9 @@
 <template>
   <div style="text-align: center;background-color: #f1f1f3;height: 100%;padding: 0px;margin: 0px;">
+    <div class="notice">
+      <i class="el-icon-bell"><strong>最新公告：</strong></i>
+    <notice-bar style="width: 92%" :cycle="10" />
+    </div>
     <h2 style="font-size: 50px;">{{ greeting + user.realName }}</h2>
     <div v-show="isEdit">
       <el-form ref="form" style="width: 100%" :rules="rules" :model="form" label-width="15px">
@@ -62,8 +66,8 @@
         </el-descriptions>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="isEdit = false">取 消</el-button>
-        <el-button type="primary" @click="save">确 定</el-button>
+        <el-button class="myButton" @click="isEdit = false">取 消</el-button>
+        <el-button class="myButton" type="primary" @click="save">确 定</el-button>
       </span>
     </div>
     <div v-show="!isEdit">
@@ -116,10 +120,11 @@
           </template>
           {{ user.realName }}
         </el-descriptions-item>
-
       </el-descriptions>
-      <el-button size="small" type="success" @click="edit">编辑信息</el-button>
-      <el-button size="small" type="warning" @click="editPwd">修改密码</el-button>
+      <span>
+      <el-button class="myButton" size="small" type="success" @click="edit">编辑信息</el-button>
+      <el-button class="myButton" size="small" type="warning" @click="editPwd">修改密码</el-button>
+      </span>
     </div>
     <DateBar></DateBar>
     <el-dialog title="提示" :visible.sync="pwdChange" width="30%" center>
@@ -130,23 +135,24 @@
         <el-form-item  label="确认新密码" style="margin-top: 15px; width: 80%" prop="pwd2">
           <el-input type="password" v-model="pwdForm.pwd2"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-button style="margin-top: 20px" type="primary" @click="savePwd">提交</el-button>
-          <el-button style="margin-top: 20px" @click="resetForm('pwdForm')">重置</el-button>
-        </el-form-item>
       </el-form>
+      <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="savePwd">提交</el-button>
+          <el-button @click="resetForm('pwdForm')">重置</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import DateBar from "../utils/DateBar";
+import DateBar from "./DateBar.vue";
+import NoticeBar from "@/components/NoticeBar.vue";
 import {getInfo, updateUser, getUser, updatePassword} from "@/api/user";
 import {getRole} from "@/api/role"
 
 export default {
   name: "Home",
-  components: {DateBar},
+  components: {DateBar,NoticeBar},
   data() {
     const validatePwd1 = (rule, value, callback) => {
       if (value === '') {
@@ -228,18 +234,18 @@ export default {
   },
   computed: {},
   methods: {
+    openTip(){
+
+    },
     init() {
       getInfo().then(res => {
-        console.log("个人中心获取用户信息", res);
         if (res.code == 200) {
           this.user = res.data.user;
-          console.log("个人中心获取用户信息后", this.user);
           this.refresh(this.user.id);
         }
       })
       const curTime = new Date();
       const curHour = curTime.getHours();
-      console.log("curHour", curHour)
       if (curHour < 12) {
         this.greeting = "早上好！"
       } else if (curHour < 18) {
@@ -268,7 +274,9 @@ export default {
     },
     editPwd() {
       this.pwdChange = true;
-      this.resetForm('pwdForm')
+      this.$nextTick(()=>{
+        this.resetForm('pwdForm')
+      })
     },
     save() {
       this.$refs.form.validate((valid) => {
@@ -344,9 +352,16 @@ export default {
   margin: 0px 0px;
 }
 
-.el-button{
+.myButton{
   margin-top: 20px;
   margin-left: 20px;
+  margin-right: 20px;
   justify-content:center;
+}
+
+.notice{
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: flex-start; /* 默认水平排列 */
 }
 </style>

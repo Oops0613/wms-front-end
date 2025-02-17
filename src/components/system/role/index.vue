@@ -1,5 +1,4 @@
 <template>
-  <!--<span>角色管理</span>-->
   <div>
     <div style="margin-bottom: 5px">
       <el-input v-model="queryParams.roleName" placeholder="输入角色名" style="width: 150px"
@@ -18,15 +17,17 @@
       </el-table-column>
       <el-table-column prop="roleKey" label="权限标识符" width="120">
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="200">
+      <el-table-column prop="createTime" label="创建时间" width="150">
       </el-table-column>
-      <el-table-column prop="remark" label="备注" width="150">
+      <el-table-column prop="updateTime" label="修改时间" width="150">
+      </el-table-column>
+      <el-table-column prop="remark" label="备注" width="200">
       </el-table-column>
       <el-table-column prop="operate" label="操作">
         <template slot-scope="scope">
-          <el-button size="small" icon="el-icon-edit" type="text" @click="edit(scope.row)">编辑</el-button>
+          <el-button v-show="scope.row.id!=='1'" size="small" icon="el-icon-edit" type="text" @click="edit(scope.row)">编辑</el-button>
           <el-popconfirm title="确定删除吗？" @confirm="handleDelete(scope.row.id)" style="margin-left: 5px">
-            <el-button slot="reference" size="small" icon="el-icon-delete" type="text">删除</el-button>
+            <el-button v-show="scope.row.id!=='1'" slot="reference" size="small" icon="el-icon-delete" type="text">删除</el-button>
           </el-popconfirm>
         </template>
       </el-table-column>
@@ -232,7 +233,7 @@ export default {
           this.getRoleList();
         } else {
           this.$message({
-            message: "修改角色失败",
+            message: res.msg,
             type: "error"
           })
         }

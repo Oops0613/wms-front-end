@@ -61,7 +61,10 @@ export function login(data) {
     return request({
         url: '/user/login',
         method: 'post',
-        data: data
+        data: data,
+        headers: {
+            needToken: false
+        },
     })
 }
 export function logout() {

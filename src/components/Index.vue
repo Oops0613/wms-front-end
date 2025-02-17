@@ -1,7 +1,13 @@
 <template>
   <el-container style="height: 100%; border: 1px solid #eee">
-    <el-aside :width="sideWidth+'px'" style="background-color: rgb(238, 241, 246) ; height: 100%;margin-left: -1px;margin-top:-1px" >
-      <Aside :isCollapse="isCollapse"> <span slot="title">title</span></Aside>
+    <el-aside
+        :width="sideWidth+'px'"
+        style="background-color: rgb(238, 241, 246) ;
+        height: 100%;
+        margin-left: -1px;margin-top:-1px;
+        overflow-x: hidden;  /* 隐藏横向滚动条 */"
+    >
+      <Aside :isCollapse="isCollapse" :width="sideWidth+'px'" ></Aside>
     </el-aside>
 
     <el-container style="height: 100%">
@@ -10,7 +16,6 @@
       </el-header>
 
       <el-main style="height: 100%">
-<!--        <Main></Main>-->
         <router-view/>
       </el-main>
     </el-container>
@@ -50,9 +55,8 @@ export default {
       this.isCollapse=!this.isCollapse;
       this.sideWidth=this.isCollapse?64:200;
       this.icon=this.isCollapse?"el-icon-s-unfold":"el-icon-s-fold"
-    }
+    },
   },
-
 };
 </script>
 <style scoped>
