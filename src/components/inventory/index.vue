@@ -122,7 +122,7 @@
 <script>
 import {listInventory} from "@/api/inventory";
 import router from "@/router";
-import {listCategory} from "@/api/category";
+import {listAvailableCategory} from "@/api/category";
 import {listAllWarehouse} from "@/api/warehouse";
 import {addOutApply, addAllotApply} from "@/api/record"
 
@@ -260,7 +260,7 @@ export default {
         console.log("仓库表", this.warehouseList)
       })
       //加载已有的分类列表
-      listCategory().then(res => {
+      listAvailableCategory().then(res => {
         console.log("分类表", res.data)
         this.categoryTree = this.handleTree(res.data, 'id')
       })

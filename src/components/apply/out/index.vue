@@ -116,9 +116,9 @@
 
 <script>
 import {listAllWarehouse} from "@/api/warehouse";
-import {listCategory} from "@/api/category";
-import {getRecord, addInApply, listOutApply} from "@/api/record";
-import {getGoods, listAllGoods} from "@/api/goods";
+import {listAvailableCategory} from "@/api/category";
+import {getRecord, listOutApply} from "@/api/record";
+import {listAllGoods} from "@/api/goods";
 
 export default {
   name: "OutApply",
@@ -178,7 +178,7 @@ export default {
         this.warehouseList = res.data;
       })
       //加载已有的分类列表
-      listCategory().then(res => {
+      listAvailableCategory().then(res => {
         this.categoryTree = this.handleTree(res.data, 'id')
       })
       listOutApply(this.queryParams).then(res => {

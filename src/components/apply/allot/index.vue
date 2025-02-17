@@ -133,7 +133,7 @@
 
 <script>
 import {listAllWarehouse} from "@/api/warehouse";
-import {listCategory} from "@/api/category";
+import {listAvailableCategory} from "@/api/category";
 import {getRecord,listAllotApply} from "@/api/record";
 import {listAllGoods} from "@/api/goods";
 
@@ -196,7 +196,7 @@ export default {
         this.warehouseList = res.data;
       })
       //加载已有的分类列表
-      listCategory().then(res => {
+      listAvailableCategory().then(res => {
         this.categoryTree = this.handleTree(res.data, 'id')
       })
       listAllotApply(this.queryParams).then(res => {

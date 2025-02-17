@@ -1,10 +1,17 @@
 import request from "@/request";
-//查询用户列表
+//查询分类列表
 export function listCategory(query){
     return request({
         url:'/category/list',
         method:'get',
         params:query
+    })
+}
+//查询可用的分类列表（忽略无子女的一级分类）
+export function listAvailableCategory(){
+    return request({
+        url:'/category/listAvailableCategory',
+        method:'get',
     })
 }
 

@@ -175,7 +175,7 @@
 
 <script>
 import {listGoods,getGoods,addGoods,updateGoods,delGoods} from "@/api/goods";
-import {listCategory} from "@/api/category";
+import {listAvailableCategory} from "@/api/category";
 
 export default {
   name: "Goods",
@@ -217,6 +217,8 @@ export default {
         name: '',
         //所属分类ID
         categoryId: '',
+        //所属分类名
+        categoryName: '',
         //计量单位
         unit: '',
         //每单位价格
@@ -352,7 +354,7 @@ export default {
 
     getList() {
       //加载已有的分类列表
-      listCategory().then(res => {
+      listAvailableCategory().then(res => {
         this.categoryList=res.data
         this.categoryTree = this.handleTree(res.data, 'id')
         this.categoryTree2 = this.handleTree(res.data, 'id')
@@ -388,6 +390,7 @@ export default {
         id: '',
         name: '',
         categoryId: '',
+        categoryName: '',
         unit: '',
         volumePerUnit: '',
         lowThreshold:'',
@@ -417,7 +420,8 @@ export default {
       //选中分类时，给表单对应项赋值
       let nodesInfo = this.$refs["categoryTree"].getCheckedNodes()[0];
       this.form.categoryId=nodesInfo.value;
-    }
+      this.form.categoryName=nodesInfo.label;
+    },
   },
   beforeMount() {
     this.getList()
