@@ -47,3 +47,19 @@ export function delCategory(id) {
         method: 'delete'
     })
 }
+// 查询仓库货物组成-按分类
+export function getWarehouseComposition(query) {
+    return request({
+        url: '/category/getWarehouseComposition',
+        method: 'get',
+        params:query
+    })
+}
+// 查询销售额组成-按分类
+export function getSalesComposition(query) {
+    return request({
+        url: '/category/getSalesComposition',
+        method: 'get',
+        params:query
+    })
+}

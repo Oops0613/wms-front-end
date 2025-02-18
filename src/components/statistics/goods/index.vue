@@ -163,7 +163,7 @@
       <el-card class="my-box" style="margin-top: 10px">
         <div style="display: flex;align-items: center">
           <el-select
-              v-model="queryParams.goodsId"
+              v-model="queryParams2.goodsId"
               filterable
               placeholder="请选择货物"
               size="large"
@@ -216,9 +216,12 @@ export default {
       stockData: [5, 24, 36, 16, 10, 67, 36],//库存数量日变化
       distributionData: [
       ],//货物在仓库的分布数据
-      queryParams: {
+      queryParams: {//折线图用
         goodsId: '1',
         days: 7,
+      },
+      queryParams2:{//柱状图用
+        goodsId: '1',
       },
       unitName: '',//当前货物的计量单位
       //折线图配置
@@ -451,7 +454,7 @@ export default {
       })
     },
     updateColumnChart() {
-      getGoodsDistribution(this.queryParams.goodsId).then(res=>{
+      getGoodsDistribution(this.queryParams2.goodsId).then(res=>{
         this.distributionData=res.data;
         // 提取 X 轴和 Y 轴数据
         const xData = this.distributionData.map(item => item.warehouseName);
