@@ -378,7 +378,7 @@ export default {
             name: '库存量',
             type: 'bar',
             barWidth: '60%',
-
+            showBackground: true,
             data: [],  // 使用提取的 yData
             itemStyle: {
               normal: {

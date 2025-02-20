@@ -79,3 +79,11 @@ export function getRouters() {
         method:'get'
     })
 }
+//查询用户列表
+export function getWorkLoad(query){
+    return request({
+        url:'/user/getWorkLoad',
+        method:'get',
+        params:query
+    })
+}
