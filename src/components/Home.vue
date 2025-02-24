@@ -128,7 +128,7 @@
     </div>
     <DateBar></DateBar>
     <el-dialog title="提示" :visible.sync="pwdChange" width="30%" center>
-      <el-form :model="pwdForm" :rules="pwdRules" status-icon ref="pwdForm" label-width="100px">
+      <el-form :model="pwdForm" :rules="pwdRules" status-icon ref="pwdForm" label-width="120px">
         <el-form-item label="新密码" style="width: 80%" prop="pwd1">
           <el-input type="password" v-model="pwdForm.pwd1"></el-input>
         </el-form-item>
