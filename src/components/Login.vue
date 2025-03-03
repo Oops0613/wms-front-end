@@ -102,8 +102,9 @@ export default {
   position: absolute;
   top: 50%;
   left: 50%;
-  margin-top: -200px;
-  margin-left: -250px;
+  transform: translate(-50%, -50%) scale(1.25);  /* 等比放大1.5倍并保持居中 */
+  /*margin-top: -200px;
+  margin-left: -250px;*/
   width: 450px;
   height: 330px;
   background: rgba(255, 255, 255, 0.65);

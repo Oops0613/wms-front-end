@@ -35,10 +35,11 @@ import OutApply from "@/components/apply/out/index.vue"
 import Approve from "@/components/approve/index.vue"
 import Allot from "@/components/apply/allot/index.vue";
 import Inventory from "@/components/inventory/index.vue";
+import Notice from "@/components/system/notice/index.vue"
 export default {
   components: {
     Header, Aside,
-    User, Role,
+    User, Role, Notice,
     WareHouse,
     Category,Goods,
     Inventory,
