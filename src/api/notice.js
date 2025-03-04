@@ -39,3 +39,10 @@ export function delNotice(id) {
         method: 'delete'
     })
 }
+//获取最新一条公告
+export function getLatestNotice() {
+    return request({
+        url: '/notice/getLatestNotice',
+        method: 'get'
+    })
+}

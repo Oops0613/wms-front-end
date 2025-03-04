@@ -1,8 +1,10 @@
 <template>
-  <div style="text-align: center;background-color: #f1f1f3;height: 100%;padding: 0px;margin: 0px;">
+  <div style="text-align: center;background-color: #f1f1f3;height: 100%;padding: 0;margin: 0;">
     <div class="notice">
-      <i class="el-icon-bell"><strong>最新公告：</strong></i>
-    <notice-bar style="width: 92%" :cycle="10" />
+      <i class="el-icon-bell" style="white-space: nowrap;display: inline-block;">
+        <strong>最新公告：</strong>
+      </i>
+    <notice-bar style="width: 95%" :cycle="10" />
     </div>
     <h2 style="font-size: 50px;">{{ greeting + user.realName }}</h2>
     <div v-show="isEdit">
