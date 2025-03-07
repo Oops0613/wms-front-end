@@ -24,7 +24,7 @@
               v-for="(tag, index) in scope.row.roleList"
               :key="index"
               :type="'success'"
-              style="margin-right: 5px;"
+              style="margin: 5px 5px;"
           >
             {{ roleMap[tag] }}
           </el-tag>

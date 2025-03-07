@@ -6,24 +6,32 @@
     <div style="flex:1;text-align: center;font-size: 35px">
       <span>欢迎使用超市仓储管理系统</span>
     </div>
-    <span>{{user.realName}}</span>
+    <el-badge :value="unreadAmount" :max="99" class="item">
+      <i
+          class="el-icon-message"
+          :style="{ fontSize: '35px',cursor: 'pointer'}"
+          @click="toMailBox">
+      </i>
+    </el-badge>
+    <span style="font-size: 14px">{{user.realName}}</span>
     <el-dropdown>
-      <i class="el-icon-arrow-down" style="margin-left: 5px"></i>
+      <i class="el-icon-arrow-down" :style="{marginLeft: '5px',cursor: 'pointer' }"></i>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item @click.native="toUser">个人中心</el-dropdown-item>
         <el-dropdown-item @click.native="handleLogout">退出登录</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
-
   </div>
 </template>
 <script>
 import {logout,getInfo} from "@/api/user";
+import {getUnreadAmount} from "@/api/notice";
 
 export default {
   name:"Header",
   data(){
     return {
+      unreadAmount:0,
       user: {
         id:'',
         userName:'',
@@ -37,6 +45,11 @@ export default {
   methods:{
     toUser(){
       this.$router.push("/Home");
+      this.$emit("updatePath","/Home")
+    },
+    toMailBox(){
+      this.$router.push("/notice-board");
+      this.$emit("updatePath","/notice-board")
     },
     handleLogout(){
       this.$confirm('确定退出登录？','提示',{
@@ -80,10 +93,14 @@ export default {
           this.user=res.data.user;
         }
       })
+      getUnreadAmount().then(res=>{
+        this.unreadAmount=res.data;
+      })
     }
   },
   mounted() {
     this.initUser();
+    this.$emit("updatePath",sessionStorage.getItem("lastVisitedRoute"))
     // this.$router.push("/Home")
     // console.log('重定向至Home')
   },
@@ -95,7 +112,12 @@ export default {
 
 
 <style scoped>
- /*.myStyle{
-   font-size: 10px;
- }*/
+.item {
+  margin-top: 10px;
+  margin-right: 30px;
+  margin-bottom: -10px;
+}
+::v-deep .el-badge__content.is-fixed {
+  top: 8px;
+}
 </style>

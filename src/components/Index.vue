@@ -7,12 +7,12 @@
         margin-left: -1px;margin-top:-1px;
         overflow-x: hidden;  /* 隐藏横向滚动条 */"
     >
-      <Aside :isCollapse="isCollapse" :width="sideWidth+'px'" ></Aside>
+      <Aside :isCollapse="isCollapse" :width="sideWidth+'px'" :active-menu="activeMenu" ></Aside>
     </el-aside>
 
     <el-container style="height: 100%">
       <el-header style="text-align: right; font-size: 12px;height: 100%;border-bottom: rgba(169,169,169,0.3) 1px solid">
-        <Header @doCollapse="doCollapse" :icon="icon"></Header>
+        <Header @doCollapse="doCollapse" @updatePath="updatePath" :icon="icon"></Header>
       </el-header>
 
       <el-main style="height: 100%">
@@ -48,7 +48,8 @@ export default {
     return{
       isCollapse:false,
       sideWidth:200,
-      icon:"el-icon-s-fold"
+      icon:"el-icon-s-fold",
+      activeMenu:'/Home'
     }
   },
   methods:{
@@ -57,6 +58,9 @@ export default {
       this.sideWidth=this.isCollapse?64:200;
       this.icon=this.isCollapse?"el-icon-s-unfold":"el-icon-s-fold"
     },
+    updatePath(path){
+      this.activeMenu=path;
+    }
   },
 };
 </script>
