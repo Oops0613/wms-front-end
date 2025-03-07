@@ -11,11 +11,11 @@
     </el-aside>
 
     <el-container style="height: 100%">
-      <el-header style="text-align: right; font-size: 12px;height: 100%;border-bottom: rgba(169,169,169,0.3) 1px solid">
+      <el-header style="text-align: right; font-size: 12px;height: 60px;border-bottom: rgba(169,169,169,0.3) 1px solid">
         <Header @doCollapse="doCollapse" @updatePath="updatePath" :icon="icon"></Header>
       </el-header>
 
-      <el-main style="height: 100%">
+      <el-main style="height: calc(100vh - 60px);">
         <router-view/>
       </el-main>
     </el-container>
