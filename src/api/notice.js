@@ -46,3 +46,25 @@ export function getLatestNotice() {
         method: 'get'
     })
 }
+//获取个人信箱的公告
+export function listPersonalNotice(query) {
+    return request({
+        url: '/notice/listPersonalNotice',
+        method: 'get',
+        params:query
+    })
+}
+//获取公告详情
+export function getNoticeDetail(noticeId) {
+    return request({
+        url: '/notice/getNoticeDetail/'+noticeId,
+        method: 'get'
+    })
+}
+//获取最新一条公告
+export function getUnreadAmount() {
+    return request({
+        url: '/notice/getUnreadAmount',
+        method: 'get'
+    })
+}
