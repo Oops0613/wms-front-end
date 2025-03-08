@@ -73,7 +73,7 @@
           <el-input v-model="form.realName"></el-input>
         </el-form-item>
         <el-form-item label="性别">
-          <el-radio-group v-model="form.sex">
+          <el-radio-group v-model="form.sex" style="margin-left: 10px">
             <el-radio label="0">男</el-radio>
             <el-radio label="1">女</el-radio>
           </el-radio-group>
@@ -85,7 +85,7 @@
           <el-input v-model="form.phonenumber"></el-input>
         </el-form-item>
         <el-form-item label="角色" style="width: 80%" prop="roleId">
-          <el-select v-model="form.roleId" clearable placeholder="请选择角色">
+          <el-select v-model="form.roleId" style="margin-left: 10px" clearable placeholder="请选择角色">
             <el-option
                 v-for="item in roles"
                 :key="item.id"

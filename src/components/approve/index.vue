@@ -139,7 +139,7 @@
     </el-dialog>
     <el-dialog title="申请详情" :visible.sync="detailed" width="60%" center>
       <el-descriptions size="medium" border :column="3"
-                       :label-style="{ height: '40px', width: '12%'}"
+                       :label-style="{ height: '40px', width: '13%'}"
                        :contentStyle="{height:'40px',width:'200px'}">
         <el-descriptions-item label="申请ID">{{ record.id }}</el-descriptions-item>
         <el-descriptions-item label="原库存ID">{{ record.inventoryId }}</el-descriptions-item>

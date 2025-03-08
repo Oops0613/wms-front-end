@@ -74,6 +74,7 @@
               ref="categoryTree"
               :options="categoryTree"
               :props="{value:'id', label: 'name', children: 'children'}"
+              style="width: 100%"
               @change="handleFormChange">
           </el-cascader>
         </el-form-item>
@@ -183,7 +184,7 @@ export default {
     const checkThreshold = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入高库存阈值'));
-      } else if (value <= this.form.lowThreshold) {
+      } else if (value <= parseInt(this.form.lowThreshold)) {
         callback(new Error('应高于低库存阈值'));
       } else {
         callback();

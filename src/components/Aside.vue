@@ -34,8 +34,7 @@ export default {
   name: "Aside",
   data() {
     return {
-      // 当前激活的菜单项，通常来自 Vue Router 的路径
-      activeMenu: '/Home'
+
     };
   },
   computed: {
@@ -48,9 +47,9 @@ export default {
   props: {
     width: String,
     isCollapse: Boolean,
+    activeMenu:String
   },
   created() {
-    this.activeMenu = sessionStorage.getItem("lastVisitedRoute")
     getRouters().then(res => {
       console.log("aside刷新")
       //侧边栏在权限修改后能及时更新
