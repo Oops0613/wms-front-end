@@ -210,7 +210,7 @@ export default {
           this.getList();
         } else {
           this.$message({
-            message: "新增仓库失败",
+            message: res.msg,
             type: "error"
           })
         }

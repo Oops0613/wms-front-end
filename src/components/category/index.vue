@@ -59,10 +59,10 @@
     </el-table>
     <el-dialog :title="title" :visible.sync="open" width="30%" center>
       <el-form ref="form" status-icon :model="form" :rules="rules" label-width="100px">
-        <el-form-item width="80%" v-if="form.parentName">
+        <el-form-item style="width: 80%" v-if="form.parentName">
           <strong>上级分类：{{ form.parentName }}</strong>
         </el-form-item>
-        <el-form-item label="上级分类" width="80%" prop="parentId" v-if="form.parentId!='-1'&&!adding">
+        <el-form-item label="上级分类" style="width: 80%" prop="parentId" v-if="form.parentId!='-1'&&!adding">
         <el-select v-model="form.parentId" clearable placeholder="请选择角色">
           <el-option
               v-for="item in topCategoryList"
@@ -72,10 +72,10 @@
           </el-option>
         </el-select>
       </el-form-item>
-        <el-form-item width="80%" label="分类名称" prop="name">
+        <el-form-item style="width: 80%" label="分类名称" prop="name">
           <el-input v-model="form.name"/>
         </el-form-item>
-        <el-form-item label="描述" prop="description">
+        <el-form-item style="width: 80%" label="描述" prop="description">
           <el-input
               v-model="form.description"
               type="textarea"
@@ -200,7 +200,7 @@ export default {
           this.getList();
         } else {
           this.$message({
-            message: "新增分类失败",
+            message: res.msg,
             type: "error"
           })
         }
@@ -217,7 +217,7 @@ export default {
           this.getList();
         } else {
           this.$message({
-            message: "修改分类失败",
+            message: res.msg,
             type: "error"
           })
         }

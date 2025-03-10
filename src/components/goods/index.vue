@@ -306,7 +306,7 @@ export default {
           this.getList();
         } else {
           this.$message({
-            message: "修改货物失败",
+            message: res.msg,
             type: "error"
           })
         }
@@ -346,7 +346,7 @@ export default {
           this.getList();
         } else {
           this.$message({
-            message: "新增货物失败",
+            message: res.msg,
             type: "error"
           })
         }
