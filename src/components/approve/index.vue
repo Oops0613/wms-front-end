@@ -71,6 +71,9 @@
       <el-button size="small" type="primary" style="margin-left: 5px" @click="getList">查询</el-button>
       <el-button size="small" type="success" @click="resetParam">重置</el-button>
       <el-button :disabled="btnDisabled" class="preApprove" size="small" type="warning" @click="handlePreApprove">预审批</el-button>
+      <el-popconfirm title="将所有出入库记录导出为Excel表格？" @confirm="handleExport" style="margin-left: 10px">
+        <el-button slot="reference" size="small" icon="el-icon-download" type="info">导出</el-button>
+      </el-popconfirm>
     </div>
     <el-table
         :data="tableData"
@@ -186,31 +189,9 @@
 <script>
 import {listAllWarehouse} from "@/api/warehouse";
 import {listAvailableCategory} from "@/api/category";
-import {approvePass, approveReject, getRecord, listRecord, preApprove} from "@/api/record";
+import {approvePass, approveReject, exportRecord, getRecord, listRecord, preApprove} from "@/api/record";
 import {listAllGoods} from "@/api/goods";
 
-// window.onload = () => {
-//   const btn = document.getElementsByClassName("preApprove")[0]; //预审批按钮
-//   // 注册单击事件
-//   btn.addEventListener('click', function () {
-//     let time = 59;
-//     // 禁用按钮
-//     btn.disabled = true;
-//     // 开启定时器
-//     const timer = setInterval(function () {
-//       // 判断剩余秒数
-//       if (time === 0) {
-//         // 清除定时器和复原按钮
-//         clearInterval(timer);
-//         btn.disabled = false;
-//         btn.innerHTML = '预审批';
-//       } else {
-//         btn.innerHTML = `${time}秒后可用`;
-//         time--;
-//       }
-//     }, 1000);
-//   });
-// }
 export default {
   name: "Approve",
   data() {
@@ -245,7 +226,7 @@ export default {
         toId: null,
         categoryId: null,
         goodsName: '',
-        approveStatus: '0',
+        approveStatus: '',
         type: '',
       },
       form: {
@@ -375,6 +356,9 @@ export default {
           alert("获取失败");
         }
       })
+    },
+    handleExport() {
+      exportRecord();
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);

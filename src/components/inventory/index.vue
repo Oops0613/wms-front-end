@@ -37,8 +37,11 @@
           size="small"
           style="margin-left: 8px;font-weight: bold">
       </el-checkbox>
-      <el-button size="small" type="primary" style="margin-left: 5px" @click="getList">查询</el-button>
+      <el-button size="small" type="primary" style="margin-left: 10px" @click="getList">查询</el-button>
       <el-button size="small" type="success" @click="resetParam">重置</el-button>
+      <el-popconfirm title="将所有库存数据导出为Excel表格？" @confirm="handleExport" style="margin-left: 10px">
+      <el-button slot="reference" size="small" icon="el-icon-download" type="info">导出</el-button>
+      </el-popconfirm>
     </div>
     <el-table
         :data="tableData"
@@ -120,7 +123,7 @@
 </template>
 
 <script>
-import {listInventory} from "@/api/inventory";
+import {exportInventory, listInventory} from "@/api/inventory";
 import router from "@/router";
 import {listAvailableCategory} from "@/api/category";
 import {listAllWarehouse} from "@/api/warehouse";
@@ -273,6 +276,9 @@ export default {
           alert("获取失败");
         }
       })
+    },
+    handleExport(){
+      exportInventory();
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
