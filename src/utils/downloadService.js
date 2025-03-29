@@ -49,7 +49,30 @@ downloadService.interceptors.request.use(config => {
 
 // 响应拦截器
 downloadService.interceptors.response.use(res => {
-        console.log(res)
+        // 如果返回的是 Blob 数据
+        if (res.data && res.headers['content-type'] && res.headers['content-type'].includes('application/json')) {
+            // 尝试解析返回的数据，判断是否是权限不足的错误
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const responseJson = JSON.parse(e.target.result);
+                    if (responseJson.code === 403) {
+                        Message({
+                            message: responseJson.msg || '权限不足，请联系管理员',
+                            type: 'error',
+                        });
+                        await Promise.reject(new Error('当前用户无权限进行该操作'));
+                    }
+                } catch (err) {
+                    console.log('解析错误:', err);
+                }
+            };
+            reader.readAsText(res.data); // 读取 Blob 内容
+
+            // 防止继续执行下载操作
+            return;
+        }
+
         if (!res.data) {
             return
         }
