@@ -12,6 +12,15 @@
         >
         </el-input>
         <el-button size="medium" type="primary" style="margin-left: 20px" @click="getList">查询</el-button>
+        <el-checkbox
+            v-model="queryParams.unread"
+            :true-label="0"
+            :false-label="1"
+            label="只看未读"
+            border
+            size="large"
+            style="margin-left: 20px;font-weight: bold">
+        </el-checkbox>
       </div>
     </el-card>
     <el-row :gutter="20" style="margin: 20px 15px;">
@@ -130,6 +139,7 @@ export default {
         pageNum: 1,
         pageSize: 5,
         keyWord: '',
+        unread:''
       },
     }
   },
