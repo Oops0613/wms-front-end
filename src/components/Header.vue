@@ -6,7 +6,7 @@
     <div style="flex:1;text-align: center;font-size: 35px">
       <span>欢迎使用超市仓储管理系统</span>
     </div>
-    <el-badge :value="unreadAmount" :max="99" class="item">
+    <el-badge v-bind="unreadAmount > 0 ? { value: unreadAmount, max: 99 } : {}" class="item">
       <i
           class="el-icon-message"
           :style="{ fontSize: '35px',cursor: 'pointer'}"

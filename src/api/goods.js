@@ -15,14 +15,14 @@ export function listAllGoods(query){
         params:query
     })
 }
-// 查询分类详细
+// 查询货物详细
 export function getGoods(id) {
     return request({
         url: '/goods/' + id,
         method: 'get'
     })
 }
-// 新增分类
+// 新增货物
 export function addGoods(data) {
     return request({
         url: '/goods',
@@ -31,7 +31,7 @@ export function addGoods(data) {
     })
 }
 
-// 修改分类
+// 修改货物
 export function updateGoods(data) {
     return request({
         url: '/goods',
@@ -40,7 +40,7 @@ export function updateGoods(data) {
     })
 }
 
-// 删除分类
+// 删除货物
 export function delGoods(id) {
     return request({
         url: '/goods/' + id,
@@ -67,5 +67,20 @@ export function getGoodsDistribution(id) {
     return request({
         url: '/goods/getGoodsDistribution/' + id,
         method: 'get'
+    })
+}
+// 查询单个库存监控
+export function getMonitorByGoodsId(id) {
+    return request({
+        url: '/goods/getMonitor/' + id,
+        method: 'get'
+    })
+}
+// 修改库存监控
+export function updateMonitor(data) {
+    return request({
+        url: '/goods/updateMonitor',
+        method: 'post',
+        data: data
     })
 }
