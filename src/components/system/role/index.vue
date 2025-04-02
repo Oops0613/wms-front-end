@@ -215,7 +215,7 @@ export default {
           this.getRoleList();
         } else {
           this.$message({
-            message: "新增角色失败",
+            message: res.msg,
             type: "error"
           })
         }

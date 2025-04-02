@@ -1,4 +1,5 @@
 import request from "@/request";
+import downloadService from "@/utils/downloadService";
 //查询用户列表
 export function listRecord(query){
     return request({
@@ -79,5 +80,12 @@ export function preApprove() {
     return request({
         url: '/record/preApprove',
         method: 'post',
+    })
+}
+//导出出入库记录
+export function exportRecord(){
+    return downloadService({
+        url:'/record/export',
+        method:'get',
     })
 }

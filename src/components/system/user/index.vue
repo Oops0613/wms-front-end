@@ -193,7 +193,7 @@ export default {
           this.getList();
         } else {
           this.$message({
-            message: "修改用户失败",
+            message: res.msg,
             type: "error"
           })
         }
@@ -249,7 +249,7 @@ export default {
           this.getList();
         } else {
           this.$message({
-            message: "新增用户失败",
+            message: res.msg,
             type: "error"
           })
         }
@@ -273,7 +273,6 @@ export default {
           alert("获取失败");
         }
       })
-
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);

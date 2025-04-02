@@ -38,22 +38,30 @@
       </el-table-column>
       <el-table-column prop="highThreshold" label="高库存阈值" width="100">
       </el-table-column>
-      <el-table-column prop="hasExpirationTime" label="是否有过期时间" width="80">
+      <el-table-column prop="hasExpirationTime" label="过期时间" width="80">
         <template slot-scope="scope">
           <el-tag :type="scope.row.hasExpirationTime === '0' ? 'success' : 'danger'" disable-transitions>
             {{ scope.row.hasExpirationTime === '0' ? '无' : '有' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="备注" width="200" :show-overflow-tooltip="true">
+      <el-table-column prop="remark" label="备注" width="150" :show-overflow-tooltip="true">
       </el-table-column>
       <el-table-column prop="operate" label="操作">
         <template slot-scope="scope">
           <el-button size="small" icon="el-icon-view" type="text" @click="handleView(scope.row)">查看详情</el-button>
           <el-button size="small" icon="el-icon-edit" type="text" @click="edit(scope.row)">编辑</el-button>
+          <el-button size="small" icon="el-icon-warning-outline" type="text" @click="handleMonitor(scope.row)">库存监控</el-button>
           <el-popconfirm title="确定删除吗？" @confirm="handleDelete(scope.row.id)" style="margin-left: 5px">
             <el-button slot="reference" size="small" icon="el-icon-delete" type="text">删除</el-button>
           </el-popconfirm>
+        </template>
+      </el-table-column>
+      <el-table-column prop="monitorStatus" label="监控状态" width="80">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.monitorStatus === '1' ? 'success' : 'info'" disable-transitions>
+            {{ scope.row.monitorStatus === '0' ? '停用' : '启用' }}
+          </el-tag>
         </template>
       </el-table-column>
     </el-table>
@@ -171,11 +179,60 @@
         <el-descriptions-item label="备注">{{goods.remark}}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
+    <el-dialog title="库存监控" :visible.sync="editMonitor" width="30%" center>
+      <template #title>
+        <span>库存监控</span>
+        <el-tooltip
+            content="当库存数量<低库存阈值时，指定人员会收到预警邮件"
+            placement="top">
+          <i class="el-icon-question"/>
+        </el-tooltip>
+      </template>
+      <el-form ref="monitor" status-icon :rules="rules" :model="monitor" label-width="120px" center>
+        <el-form-item label="通知人邮箱" style="width: 80%" prop="email">
+          <el-input v-model="monitor.email"></el-input>
+        </el-form-item>
+        <el-form-item label="监控频率" style="width: 80%" prop="period">
+          <el-select
+              v-model="monitor.period"
+              placeholder="请选择监控频率">
+            <el-option
+                v-for="item in periodList"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态" style="width: 80%" prop="status">
+          <el-switch
+              v-model="monitor.status"
+              active-text="启用"
+              inactive-text="停用"
+              active-value="1"
+              inactive-value="0">
+          </el-switch>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editMonitor = false">取 消</el-button>
+        <el-button type="primary" @click="saveMonitor">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {listGoods,getGoods,addGoods,updateGoods,delGoods} from "@/api/goods";
+import {
+  listGoods,
+  getGoods,
+  addGoods,
+  updateGoods,
+  delGoods,
+  getMonitorById,
+  updateMonitor,
+  getMonitorByGoodsId
+} from "@/api/goods";
 import {listAvailableCategory} from "@/api/category";
 
 export default {
@@ -198,6 +255,13 @@ export default {
       categoryTree:[],
       //筛选条件使用
       categoryTree2:[],
+      periodList: [
+        {value: '86400', name: '1 次/天'},
+        {value: '43200', name: '2 次/天'},
+        {value: '28800', name: '3 次/天'},
+        {value: '21600', name: '4 次/天'},
+        {value: '60', name: '1440 次/天'},
+      ],
       queryParams: {
         pageNum: 1,
         pageSize: 10,
@@ -207,10 +271,18 @@ export default {
       total: 0,
       open: false,
       detailed:false,
+      editMonitor:false,
       goods:{
         amount:0,
         pricePerUnit:0,
         volumePerUnit:0,
+        monitorStatus:'',
+      },
+      monitor:{
+        goodsId:'',
+        email:'',
+        period:'86400',
+        status:'0'
       },
       form: {
         id: '',
@@ -262,10 +334,57 @@ export default {
           {pattern: /^[1-9]\d*$/, message: "请输入正整数", trigger: 'blur'},
           {validator: checkThreshold, trigger: 'blur'},
         ],
+        email: [
+          {required: true, message: "请输入邮箱", trigger: 'blur'},
+          {pattern: /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/, message: "请输入正确的邮箱", trigger: 'blur'}
+        ],
+        period: [
+          {required: true, message: "请选择监控频率", trigger: 'change'},
+        ],
       },
     }
   },
   methods: {
+    handleMonitor(row){
+      this.editMonitor=true;
+      getMonitorByGoodsId(row.id).then(res=>{
+        if(res.data===null||res.data===undefined){
+          this.monitor={
+            goodsId:row.id,
+            email:'',
+            period:'86400',
+            status:'0'
+          }
+          return;
+        }
+        console.log(res.data)
+        this.monitor=res.data;
+      })
+    },
+    saveMonitor() {
+      this.$refs.monitor.validate((valid) => {
+        if (valid) {
+          updateMonitor(this.monitor).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: "库存监控修改成功",
+                type: "success"
+              })
+              this.editMonitor = false;
+              this.getList();
+            } else {
+              this.$message({
+                message: res.msg,
+                type: "error"
+              })
+            }
+          })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
     handleView(row){
       this.detailed=true;
       this.goods=row;
@@ -306,7 +425,7 @@ export default {
           this.getList();
         } else {
           this.$message({
-            message: "修改货物失败",
+            message: res.msg,
             type: "error"
           })
         }
@@ -346,7 +465,7 @@ export default {
           this.getList();
         } else {
           this.$message({
-            message: "新增货物失败",
+            message: res.msg,
             type: "error"
           })
         }
