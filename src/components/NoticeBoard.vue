@@ -63,7 +63,7 @@
         </el-card>
       </el-col>
       <el-col :span=24-leftWidth>
-        <el-card style="height: 600px;overflow-y: auto">
+        <el-card style="height: 645px;overflow-y: auto">
           <div style="display: flex;">
             <span style="flex: 1; text-align: center;font-weight: bold">
               {{ notice.title }}

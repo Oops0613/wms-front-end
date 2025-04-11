@@ -97,8 +97,7 @@
 <script>
 import {listRole, addRole, updateRole, getRole, delRole} from "@/api/role"
 import {roleMenuTreeSelect} from "@/api/menu"
-import {treeselect} from "@/api/menu"
-import {delUser} from "@/api/user";
+import {treeSelect} from "@/api/menu"
 
 export default {
   name: "Role",
@@ -151,7 +150,7 @@ export default {
     },
     /** 查询菜单树结构 */
     getMenuTreeSelect() {
-      treeselect().then((res) => {
+      treeSelect().then((res) => {
         console.log("菜单树", res)
         this.menuOptions = res.data;
         //将第一个节点设置默认选中状态
