@@ -101,7 +101,7 @@
         <el-form-item label="申请数量" style="width: 100%" prop="amount">
           <el-slider
               v-model="form.amount"
-              :min="1" :max="maxAmount"
+              :min="0" :max="maxAmount"
               show-input
               input-size="mini">
           </el-slider>

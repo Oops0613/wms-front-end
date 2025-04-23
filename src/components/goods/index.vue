@@ -57,7 +57,7 @@
           </el-popconfirm>
         </template>
       </el-table-column>
-      <el-table-column prop="monitorStatus" label="监控状态" width="80">
+      <el-table-column prop="monitorStatus" label="监控状态" width="100" sortable>
         <template slot-scope="scope">
           <el-tag :type="scope.row.monitorStatus === '1' ? 'success' : 'info'" disable-transitions>
             {{ scope.row.monitorStatus === '0' ? '停用' : '启用' }}
