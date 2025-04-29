@@ -160,7 +160,7 @@ export default {
         warehouseId: null,
         categoryId: null,
         goodsName: '',
-        ignoreZero: '',
+        ignoreZero: 1,
       },
       total: 0,
       open: false,
@@ -294,7 +294,7 @@ export default {
     resetParam() {
       this.queryParams.warehouseId = null;
       this.queryParams.categoryId = null;
-      this.queryParams.ignoreZero = '';
+      this.queryParams.ignoreZero = 1;
       this.queryParams.goodsName = '';
     },
     resetForm() {

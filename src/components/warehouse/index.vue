@@ -23,7 +23,7 @@
       </el-table-column>
       <el-table-column prop="remainingCapacity" label="剩余容量（升）" width="130" sortable>
       </el-table-column>
-      <el-table-column prop="percentage" label="已用空间" width="150" sortable>
+      <el-table-column prop="percentage" label="已用空间" width="150" sortable :sort-method="sortByPercentage">
         <template slot-scope="scope">
         <el-progress text-inside
                      :stroke-width="14"
@@ -121,6 +121,11 @@ export default {
     getPercentage(row){
       let num=(row.capacity-row.remainingCapacity)/row.capacity*100;
       return parseFloat(num.toFixed(2));
+    },
+    sortByPercentage(a, b) {
+      const percentageA = (a.capacity - a.remainingCapacity) / a.capacity * 100;
+      const percentageB = (b.capacity - b.remainingCapacity) / b.capacity * 100;
+      return percentageA - percentageB; // 按升序排序
     },
     customColorMethod(percentage) {
       if (percentage < 30) {
