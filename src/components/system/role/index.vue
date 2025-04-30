@@ -38,7 +38,7 @@
                    layout="total, sizes, prev, pager, next, jumper"
                    :total="total">
     </el-pagination>
-    <el-dialog title="提示" :visible.sync="open" width="30%" center>
+    <el-dialog :title="title" :visible.sync="open" width="30%" center>
       <el-form ref="form" status-icon :rules="rules" :model="form" label-width="120px">
         <el-form-item label="角色名" style="width: 80%" prop="roleName">
           <el-input v-model="form.roleName"></el-input>
@@ -103,6 +103,7 @@ export default {
   name: "Role",
   data() {
     return {
+      title:'',
       total: 0,
       open: false,
       menuExpand: false,
@@ -174,6 +175,7 @@ export default {
       })
     },
     add() {
+      this.title="新增角色";
       this.open = true;
       this.$nextTick(() => {
         this.resetForm();
@@ -181,6 +183,7 @@ export default {
       this.getMenuTreeSelect()
     },
     edit(row) {
+      this.title="修改角色";
       this.form.id = row.id;
       this.open = true;
       //通过roleId获取对应的菜单树

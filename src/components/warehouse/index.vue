@@ -52,7 +52,7 @@
                    layout="total, sizes, prev, pager, next, jumper"
                    :total="total">
     </el-pagination>
-    <el-dialog title="提示" :visible.sync="open" width="30%" center>
+    <el-dialog :title="title" :visible.sync="open" width="30%" center>
       <el-form ref="form" status-icon :rules="rules" :model="form" label-width="140px" center>
         <el-form-item label="仓库名" style="width: 80%" prop="name">
           <el-input v-model="form.name"></el-input>
@@ -96,6 +96,7 @@ export default {
       open: false,
       using:false,
       percentage:0,
+      title:'',
       form: {
         id: '',
         //仓库名
@@ -159,6 +160,7 @@ export default {
     },
     edit(row) {
       //使用中的仓库不能更改容量
+      this.title="修改仓库";
       this.using = row.remainingCapacity < row.capacity;
       this.handleGet(row.id);
       this.form.id = row.id;
@@ -198,6 +200,7 @@ export default {
       })
     },
     add() {
+      this.title="新增仓库";
       this.using=false;
       this.open = true;
       this.$nextTick(() => {
