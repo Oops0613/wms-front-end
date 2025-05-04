@@ -121,8 +121,11 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="申请数量" style="width: 80%" prop="amount">
+        <el-form-item label="申请数量" style="width: 80%;margin-bottom: 0" prop="amount">
           <el-input v-model="form.amount"></el-input>
+          <span>单位：{{this.unit}}</span>
+          <br/>
+          <span>容积：{{form.amount*this.volumePerUnit}}（升）</span>
         </el-form-item>
         <el-form-item label="备注" prop="applyRemark" style="width: 80%">
           <el-input
@@ -207,6 +210,8 @@ export default {
       open: false,
       detailed: false,
       expire: false,
+      unit:'',
+      volumePerUnit:0,
       form: {
         //目的仓库
         toId: '',
@@ -393,6 +398,9 @@ export default {
       getGoods(goodsId).then(res => {
         this.expire = res.data.hasExpirationTime === '1';
         this.form.expirationTime='';
+        //更新选中的货物的计量单位
+        this.unit=res.data.unit;
+        this.volumePerUnit=res.data.volumePerUnit;
       })
     },
   },

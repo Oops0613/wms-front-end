@@ -1,15 +1,15 @@
 import request from "@/request";
 // 查询菜单下拉树结构
-export function treeselect() {
+export function treeSelect() {
   return request({
-    url: '/menu/treeselect',
+    url: '/menu/treeSelect',
     method: 'get'
   })
 }
 // 根据角色ID查询菜单下拉树结构
 export function roleMenuTreeSelect(roleId) {
     return request({
-        url: '/menu/roleMenuTreeselect/' + roleId,
+        url: '/menu/roleMenuTreeSelect/' + roleId,
         method: 'get'
     })
 }

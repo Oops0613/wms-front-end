@@ -315,6 +315,7 @@ export default {
                 message: "修改密码成功",
                 type: "success"
               })
+              this.pwdChange=false;
               this.refresh(this.form.id);
             } else {
               this.$message({

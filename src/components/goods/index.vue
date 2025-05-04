@@ -57,7 +57,7 @@
           </el-popconfirm>
         </template>
       </el-table-column>
-      <el-table-column prop="monitorStatus" label="监控状态" width="80">
+      <el-table-column prop="monitorStatus" label="监控状态" width="100" sortable>
         <template slot-scope="scope">
           <el-tag :type="scope.row.monitorStatus === '1' ? 'success' : 'info'" disable-transitions>
             {{ scope.row.monitorStatus === '0' ? '停用' : '启用' }}
@@ -71,7 +71,7 @@
                    layout="total, sizes, prev, pager, next, jumper"
                    :total="total">
     </el-pagination>
-    <el-dialog title="提示" :visible.sync="open" width="30%" center>
+    <el-dialog :title="title" :visible.sync="open" width="30%" center>
       <el-form ref="form" status-icon :rules="rules" :model="form" label-width="120px" center>
         <el-form-item label="货物名" style="width: 80%" prop="name">
           <el-input v-model="form.name"></el-input>
@@ -249,6 +249,7 @@ export default {
     };
     return {
       using:false,
+      title:'',
       tableData: [],
       categoryList:[],
       //填写表单时使用
@@ -409,6 +410,7 @@ export default {
       });
     },
     edit(row) {
+      this.title="修改货物";
       this.using = row.amount>0;
       this.handleGet(row.id);
       this.form.id = row.id;
@@ -448,6 +450,7 @@ export default {
       })
     },
     add() {
+      this.title="新增货物";
       this.using=false
       this.open = true;
       this.$nextTick(() => {

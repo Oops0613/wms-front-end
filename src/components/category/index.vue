@@ -20,18 +20,8 @@
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
 <!--      <el-table-column prop="id" label="ID" width="100"/>-->
-      <el-table-column prop="name" label="分类名称" :show-overflow-tooltip="true" width="200"/>
-      <el-table-column prop="description" label="描述" width="250" :show-overflow-tooltip="true"/>
-      <el-table-column label="创建时间" align="left" prop="createTime" width="250">
-        <template slot-scope="scope">
-          <span>{{ scope.row.createTime }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="修改时间" align="left" prop="updateTime" width="250">
-        <template slot-scope="scope">
-          <span>{{ scope.row.updateTime }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column prop="name" label="分类名称" :show-overflow-tooltip="true" width="300"/>
+      <el-table-column prop="description" label="描述" width="300" :show-overflow-tooltip="true"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <div style="display: flex; align-items: center; justify-content: center;">
@@ -54,6 +44,16 @@
               <el-button slot="reference" size="small" type="text" icon="el-icon-delete">删除</el-button>
             </el-popconfirm>
           </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" align="left" prop="createTime" width="250">
+        <template slot-scope="scope">
+          <span>{{ scope.row.createTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="修改时间" align="left" prop="updateTime" width="250">
+        <template slot-scope="scope">
+          <span>{{ scope.row.updateTime }}</span>
         </template>
       </el-table-column>
     </el-table>

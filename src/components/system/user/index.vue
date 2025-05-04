@@ -64,7 +64,7 @@
                    layout="total, sizes, prev, pager, next, jumper"
                    :total="total">
     </el-pagination>
-    <el-dialog title="提示" :visible.sync="open" width="30%" center>
+    <el-dialog :title="title" :visible.sync="open" width="30%" center>
       <el-form ref="form" status-icon :rules="rules" :model="form" label-width="80px">
         <el-form-item label="用户名" style="width: 80%" prop="userName">
           <el-input v-model="form.userName"></el-input>
@@ -110,6 +110,7 @@ export default {
   name: "User",
   data() {
     return {
+      title:'',
       adding: false,
       tableData: [],
       queryParams: {
@@ -179,6 +180,7 @@ export default {
     },
     edit(row) {
       this.handleGet(row.id);
+      this.title="修改用户";
       this.form.id = row.id;
       this.open = true;
     },
@@ -232,6 +234,7 @@ export default {
       })
     },
     add() {
+      this.title="新增用户";
       this.open = true;
       this.$nextTick(() => {
         //this.form.password='';

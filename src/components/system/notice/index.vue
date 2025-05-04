@@ -55,7 +55,7 @@
                    layout="total, sizes, prev, pager, next, jumper"
                    :total="total">
     </el-pagination>
-    <el-dialog title="提示" :visible.sync="open" width="40%" center>
+    <el-dialog :title="hint" :visible.sync="open" width="40%" center>
       <el-form ref="form" status-icon :rules="rules" :model="form" label-width="120px">
         <div v-show="adding">
         <el-form-item label="收件人" style="width: 80%" prop="roleList">
@@ -103,6 +103,7 @@ export default {
   name: "Notice",
   data() {
     return {
+      hint:'',
       total: 0,
       open: false,
       adding:true,
@@ -154,6 +155,7 @@ export default {
       })
     },
     add() {
+      this.hint="新增公告";
       this.open = true;
       this.adding=true;
       this.rules.roleList[0].required=true;
@@ -163,6 +165,7 @@ export default {
     },
     edit(row) {
       this.handleGet(row.id);
+      this.hint="修改公告";
       this.form.id = row.id;
       this.open = true;
       this.adding=false;

@@ -101,7 +101,7 @@
         <el-form-item label="申请数量" style="width: 100%" prop="amount">
           <el-slider
               v-model="form.amount"
-              :min="1" :max="maxAmount"
+              :min="0" :max="maxAmount"
               show-input
               input-size="mini">
           </el-slider>
@@ -160,7 +160,7 @@ export default {
         warehouseId: null,
         categoryId: null,
         goodsName: '',
-        ignoreZero: '',
+        ignoreZero: 1,
       },
       total: 0,
       open: false,
@@ -294,7 +294,7 @@ export default {
     resetParam() {
       this.queryParams.warehouseId = null;
       this.queryParams.categoryId = null;
-      this.queryParams.ignoreZero = '';
+      this.queryParams.ignoreZero = 1;
       this.queryParams.goodsName = '';
     },
     resetForm() {
