@@ -137,7 +137,7 @@ export default {
       rules: {
         userName: [
           {required: true, message: "请输入用户名", trigger: 'blur'},
-          {min: 4, max: 8, message: "长度4~8个字符", trigger: 'blur'}
+          {min: 4, max: 20, message: "长度4~20个字符", trigger: 'blur'}
         ],
         realName: [
           {required: true, message: "请输入用户姓名", trigger: 'blur'},
