@@ -216,7 +216,7 @@ export default {
             type: "success"
           })
           this.open = false;
-          this.$router.push('/out-apply');
+          // this.$router.push('/out-apply');
         } else {
           this.$message({
             message: res.msg,
@@ -233,7 +233,7 @@ export default {
             type: "success"
           })
           this.open = false;
-          this.$router.push('/allot');
+          // this.$router.push('/allot');
         } else {
           this.$message({
             message: res.msg,

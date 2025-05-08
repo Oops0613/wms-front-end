@@ -96,6 +96,11 @@
                 @click.native="handleGoodsChange(item.id)">
             </el-option>
           </el-select>
+          <span style="color: red">↓低库存阈值：{{this.low}}</span>
+          <br/>
+          <span style="font-weight: bold">当前库存：{{this.cur}}</span>
+          <br/>
+          <span style="color: darkorange">↑高库存阈值：{{this.high}}</span>
         </el-form-item>
         <div v-if="expire">
           <el-form-item label="货物过期时间" prop="expirationTime">
@@ -181,6 +186,10 @@ export default {
   name: "InApply",
   data() {
     return {
+      low: null,
+      high: null,
+      cur: null,
+
       tableData: [],
       categoryTree: [],
       warehouseList: [],
@@ -257,49 +266,12 @@ export default {
     save() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          if (this.form.id) {
-            this.handleEdit();
-          } else {
-            this.handleAdd();
-          }
+          this.handleAdd();
         } else {
           console.log('error submit!!');
           return false;
         }
       });
-    },
-    handleEdit() {
-      updateWarehouse(this.form).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: "修改仓库成功",
-            type: "success"
-          })
-          this.open = false;
-          this.getList();
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "error"
-          })
-        }
-      })
-    },
-    handleDelete(id) {
-      delWarehouse(id).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: "删除仓库成功",
-            type: "success"
-          })
-          this.getList();
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "error"
-          })
-        }
-      })
     },
     add() {
       this.open = true;
@@ -401,6 +373,10 @@ export default {
         //更新选中的货物的计量单位
         this.unit=res.data.unit;
         this.volumePerUnit=res.data.volumePerUnit;
+        //更新标尺
+        this.low=res.data.lowThreshold;
+        this.high=res.data.highThreshold;
+        this.cur=res.data.amount;
       })
     },
   },
@@ -411,5 +387,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
