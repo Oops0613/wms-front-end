@@ -52,7 +52,7 @@
       </el-table-column>
       <el-table-column prop="goodsName" label="货物名" width="200">
       </el-table-column>
-      <el-table-column prop="categoryName" label="分类名" width="200">
+      <el-table-column prop="categoryName" label="分类名" width="120">
       </el-table-column>
       <el-table-column prop="toName" label="目的仓库名" width="200">
       </el-table-column>
@@ -122,9 +122,11 @@
                 v-for="item in warehouseList"
                 :key="item.id"
                 :label="item.name"
-                :value="item.id">
+                :value="item.id"
+                @click.native="handleWarehouseChange(item.id)">
             </el-option>
           </el-select>
+          <span>剩余容量：{{this.remainingCapacity}}（升）</span>
         </el-form-item>
         <el-form-item label="申请数量" style="width: 80%;margin-bottom: 0" prop="amount">
           <el-input v-model="form.amount"></el-input>
@@ -177,7 +179,7 @@
 </template>
 
 <script>
-import {listAllWarehouse} from "@/api/warehouse";
+import {getWarehouse, listAllWarehouse} from "@/api/warehouse";
 import {listAvailableCategory} from "@/api/category";
 import {listInApply, getRecord,addInApply} from "@/api/record";
 import {getGoods, listAllGoods} from "@/api/goods";
@@ -189,6 +191,7 @@ export default {
       low: null,
       high: null,
       cur: null,
+      remainingCapacity:null,
 
       tableData: [],
       categoryTree: [],
@@ -379,6 +382,11 @@ export default {
         this.cur=res.data.amount;
       })
     },
+    handleWarehouseChange(wId){
+      getWarehouse(wId).then(res=>{
+        this.remainingCapacity=res.data.remainingCapacity;
+      })
+    }
   },
   beforeMount() {
     this.getList()

@@ -89,7 +89,7 @@
       </el-table-column>
       <el-table-column prop="goodsName" label="货物名" width="190">
       </el-table-column>
-      <el-table-column prop="categoryName" label="分类名" width="190">
+      <el-table-column prop="categoryName" label="分类名" width="120">
       </el-table-column>
       <el-table-column prop="fromName" label="源仓库名" width="150">
       </el-table-column>
