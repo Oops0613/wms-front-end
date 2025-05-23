@@ -51,7 +51,7 @@
       </el-table-column>
       <el-table-column prop="goodsName" label="货物名" width="200">
       </el-table-column>
-      <el-table-column prop="categoryName" label="分类名" width="200">
+      <el-table-column prop="categoryName" label="分类名" width="120">
       </el-table-column>
       <el-table-column prop="warehouseName" label="仓库名" width="200">
       </el-table-column>
@@ -93,9 +93,11 @@
                   v-for="item in warehouseList"
                   :key="item.id"
                   :label="item.name"
-                  :value="item.id">
+                  :value="item.id"
+                  @click.native="handleWarehouseChange(item.id)">
               </el-option>
             </el-select>
+            <span>剩余容量：{{this.remainingCapacity}}（升）</span>
           </el-form-item>
         </div>
         <el-form-item label="申请数量" style="width: 100%" prop="amount">
@@ -105,6 +107,7 @@
               show-input
               input-size="mini">
           </el-slider>
+          <span>容积：{{form.amount*this.volumePerUnit}}（升）</span>
         </el-form-item>
         <el-form-item label="备注" prop="applyRemark" style="width: 80%">
           <el-input
@@ -126,8 +129,9 @@
 import {exportInventory, listInventory} from "@/api/inventory";
 import router from "@/router";
 import {listAvailableCategory} from "@/api/category";
-import {listAllWarehouse} from "@/api/warehouse";
+import {getWarehouse, listAllWarehouse} from "@/api/warehouse";
 import {addOutApply, addAllotApply} from "@/api/record"
+import {getGoods} from "@/api/goods";
 
 export default {
   name: "Inventory",
@@ -143,6 +147,8 @@ export default {
       }
     };
     return {
+      remainingCapacity:null,
+      volumePerUnit:null,
       //出库申请权限
       outApply: false,
       //调拨申请权限
@@ -216,7 +222,7 @@ export default {
             type: "success"
           })
           this.open = false;
-          this.$router.push('/out-apply');
+          // this.$router.push('/out-apply');
         } else {
           this.$message({
             message: res.msg,
@@ -233,7 +239,7 @@ export default {
             type: "success"
           })
           this.open = false;
-          this.$router.push('/allot');
+          // this.$router.push('/allot');
         } else {
           this.$message({
             message: res.msg,
@@ -243,6 +249,9 @@ export default {
       })
     },
     add(row, isAllot) {
+      getGoods(row.goodsId).then(res=>{
+        this.volumePerUnit=res.data.volumePerUnit;
+      })
       this.resetForm();
       this.isAllot = isAllot;
       if(!isAllot){
@@ -315,6 +324,11 @@ export default {
         expirationTime: '',
       }
       //this.$refs.form.resetFields();
+    },
+    handleWarehouseChange(wId){
+      getWarehouse(wId).then(res=>{
+        this.remainingCapacity=res.data.remainingCapacity;
+      })
     },
     handleSearchChange() {
       let cid = this.queryParams.categoryId

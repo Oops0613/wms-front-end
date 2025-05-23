@@ -117,7 +117,7 @@
                   sortable>
                 <template slot-scope="scope">
                   <span style="color: limegreen; font-weight: bold;">
-                    +{{ scope.row.amount - scope.row.lowThreshold }}
+                    +{{ scope.row.amount - scope.row.highThreshold }}
                   </span>
                 </template>
               </el-table-column>

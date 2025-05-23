@@ -52,7 +52,7 @@
       </el-table-column>
       <el-table-column prop="goodsName" label="货物名" width="200">
       </el-table-column>
-      <el-table-column prop="categoryName" label="分类名" width="200">
+      <el-table-column prop="categoryName" label="分类名" width="120">
       </el-table-column>
       <el-table-column prop="toName" label="目的仓库名" width="200">
       </el-table-column>
@@ -96,6 +96,11 @@
                 @click.native="handleGoodsChange(item.id)">
             </el-option>
           </el-select>
+          <span style="color: red">↓低库存阈值：{{this.low}}</span>
+          <br/>
+          <span style="font-weight: bold">当前库存：{{this.cur}}</span>
+          <br/>
+          <span style="color: darkorange">↑高库存阈值：{{this.high}}</span>
         </el-form-item>
         <div v-if="expire">
           <el-form-item label="货物过期时间" prop="expirationTime">
@@ -117,9 +122,11 @@
                 v-for="item in warehouseList"
                 :key="item.id"
                 :label="item.name"
-                :value="item.id">
+                :value="item.id"
+                @click.native="handleWarehouseChange(item.id)">
             </el-option>
           </el-select>
+          <span>剩余容量：{{this.remainingCapacity}}（升）</span>
         </el-form-item>
         <el-form-item label="申请数量" style="width: 80%;margin-bottom: 0" prop="amount">
           <el-input v-model="form.amount"></el-input>
@@ -172,7 +179,7 @@
 </template>
 
 <script>
-import {listAllWarehouse} from "@/api/warehouse";
+import {getWarehouse, listAllWarehouse} from "@/api/warehouse";
 import {listAvailableCategory} from "@/api/category";
 import {listInApply, getRecord,addInApply} from "@/api/record";
 import {getGoods, listAllGoods} from "@/api/goods";
@@ -181,6 +188,11 @@ export default {
   name: "InApply",
   data() {
     return {
+      low: null,
+      high: null,
+      cur: null,
+      remainingCapacity:null,
+
       tableData: [],
       categoryTree: [],
       warehouseList: [],
@@ -257,49 +269,12 @@ export default {
     save() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          if (this.form.id) {
-            this.handleEdit();
-          } else {
-            this.handleAdd();
-          }
+          this.handleAdd();
         } else {
           console.log('error submit!!');
           return false;
         }
       });
-    },
-    handleEdit() {
-      updateWarehouse(this.form).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: "修改仓库成功",
-            type: "success"
-          })
-          this.open = false;
-          this.getList();
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "error"
-          })
-        }
-      })
-    },
-    handleDelete(id) {
-      delWarehouse(id).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: "删除仓库成功",
-            type: "success"
-          })
-          this.getList();
-        } else {
-          this.$message({
-            message: res.msg,
-            type: "error"
-          })
-        }
-      })
     },
     add() {
       this.open = true;
@@ -401,8 +376,17 @@ export default {
         //更新选中的货物的计量单位
         this.unit=res.data.unit;
         this.volumePerUnit=res.data.volumePerUnit;
+        //更新标尺
+        this.low=res.data.lowThreshold;
+        this.high=res.data.highThreshold;
+        this.cur=res.data.amount;
       })
     },
+    handleWarehouseChange(wId){
+      getWarehouse(wId).then(res=>{
+        this.remainingCapacity=res.data.remainingCapacity;
+      })
+    }
   },
   beforeMount() {
     this.getList()
@@ -411,5 +395,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
